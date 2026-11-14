@@ -117,8 +117,8 @@ function theoDoiLen(){
 /* ---------- khởi động ---------- */
 function khoiDong(cb){
   Promise.all([
-    fetch('data/cau-hinh.json').then(function(r){return r.json()}),
-    fetch('data/san-pham.json').then(function(r){return r.json()})
+    fetch('data/cau-hinh.json',{cache:'no-cache'}).then(function(r){return r.json()}),
+    fetch('data/san-pham.json',{cache:'no-cache'}).then(function(r){return r.json()})
   ]).then(function(kq){
     CH=kq[0]; DS=kq[1].filter(function(x){return x && x.ten});
     docGio(); veDau(); veChan();

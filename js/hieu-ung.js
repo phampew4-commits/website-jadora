@@ -130,6 +130,7 @@ function buocCuon(khoi) {
   theoCuon(function () {
     var b = khoi.getBoundingClientRect(), di = Math.max(1, b.height - innerHeight),
         p = kep(-b.top / di, 0, 1), buoc = Math.min(so - 1, Math.floor(p * so));
+    if (b.bottom > -200 && b.top < innerHeight + 200) khoi.style.setProperty('--pc', (p * so - buoc - .5).toFixed(3));   /* vị trí trong bước hiện tại: -0.5 … 0.5, cho ảnh trôi lệch nhau */
     if (buoc === dang) return; dang = buoc;
     mon.forEach(function (el) { el.classList.toggle('bat', +el.dataset.b === buoc); });
   });

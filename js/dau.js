@@ -1,22 +1,36 @@
 /* ===== JADORA — thanh trên cùng + menu xổ lớn (kiểu cozyleigh.studio) và ảnh lấy từ app =====
    Tải sau chung.js: các hàm dưới đây thay cho bản cũ cùng tên. */
 
-/* ---------- ảnh: dùng bản đã nén từ app (img/sp), thiếu thì lấy từ Drive ---------- */
-var ANH_THIEU = {};
-fetch('data/anh-thieu.json').then(function (r) { return r.json(); }).then(function (ds) { ds.forEach(function (i) { ANH_THIEU[i] = 1; }); }).catch(function () {});
-function anhDrive(id, w) { return 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 600); }
+/* ---------- ảnh: giống web Ngọc Trầm — web chỉ giữ mã ảnh, Google phát ảnh thẳng từ Drive theo đúng cỡ cần ---------- */
 function anh(id, w) {
   if (!id) return '';
-  if (/[\/.]/.test(id)) return id;
-  if (ANH_THIEU[id]) return anhDrive(id, w);
-  return 'img/sp/' + id + ((w || 600) <= 500 ? '-720' : '-1600') + '.webp';
+  if (/[\/.]/.test(id)) return id;          /* ảnh có sẵn đường dẫn (dây trơn) */
+  return 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 600);
 }
-/* ảnh trên máy không tải được → lấy từ Drive một lần */
-document.addEventListener('error', function (ev) {
-  var im = ev.target; if (!im || im.tagName !== 'IMG' || im._thu) return;
-  var m = /img\/sp\/([\w-]+)-(720|1600)\.webp/.exec(im.getAttribute('src') || ''); if (!m) return;
-  im._thu = 1; im.src = anhDrive(m[1], m[2] === '720' ? 800 : 1600);
-}, true);
+
+/* ---------- video xem nhanh: món nào có video (data/video.json) thì rê chuột vào thẻ sẽ chạy video ---------- */
+var VIDEO = {};
+fetch('data/video.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { VIDEO = d || {}; }).catch(function () {});
+if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+  document.addEventListener('pointerover', function (ev) {
+    var the = ev.target.closest && ev.target.closest('.sp, .sp2'); if (!the || the._vao) return;
+    the._vao = 1;
+    var ma = the.dataset.ma, khung = the.querySelector('.sp-anh, .sp2-anh > a');
+    if (ma && VIDEO[ma] && khung && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var v = khung.querySelector('video.re');
+      if (!v) {
+        v = document.createElement('video'); v.className = 're'; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto'; v.src = VIDEO[ma];
+        v.addEventListener('playing', function () { the.classList.add('co-video'); });
+        khung.appendChild(v);
+      }
+      var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
+    }
+    the.addEventListener('pointerleave', function roi() {
+      the.removeEventListener('pointerleave', roi); the._vao = 0; the.classList.remove('co-video');
+      var v = the.querySelector('video.re'); if (v) { v.pause(); v.currentTime = 0; }
+    });
+  });
+}
 
 /* ---------- yêu thích ---------- */
 function docThich() { try { return JSON.parse(localStorage.getItem('jadora_thich')) || {}; } catch (x) { return {}; } }

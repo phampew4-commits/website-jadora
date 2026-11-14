@@ -16,7 +16,7 @@ Rồi mở http://localhost:8791
 - `css/`, `js/`: giao diện và chức năng
 - `data/cau-hinh.json`: tên thương hiệu, liên hệ, phí giao hàng, chữ trên trang
 - `data/san-pham.json`: danh sách sản phẩm
-- `img/sp/`: ảnh sản phẩm đã nén (lấy từ app bằng `cong-cu/lay_anh_tu_app.py`)
+- Ảnh sản phẩm không nằm trong kho: web chỉ giữ mã ảnh, Google phát ảnh thẳng từ Drive (giống web Ngọc Trầm)
 - `video/`: video ảnh bìa
 
 Bản thử: đơn hàng và tài khoản chỉ lưu trên máy của khách, chưa có máy chủ nhận đơn.

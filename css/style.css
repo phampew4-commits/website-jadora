@@ -7,7 +7,7 @@
   --toi:#33452F;
   --vien:rgba(90,82,72,.16); --vien-dam:rgba(90,82,72,.3);
   --serif:"Fraunces",Georgia,"Times New Roman",serif;
-  --sans:"Jost","Futura","Helvetica Neue",Arial,sans-serif;
+  --sans:"Be Vietnam Pro","Helvetica Neue",Arial,sans-serif;
   --bo:999px; --rong:1280px;
   --nhay:cubic-bezier(.22,.61,.36,1);
 }
@@ -295,3 +295,10 @@ select.sx{border:1px solid var(--vien);border-radius:999px;padding:10px 18px;bac
 
 @media(max-width:1024px){.ct-anh{position:static}}
 @media(max-width:760px){.loc-thanh{justify-content:flex-start}.o-tim input{width:130px}}
+
+/* ---- lời mời trên footer (dùng cho mọi trang) ---- */
+.chan-moi{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;padding-bottom:50px;margin-bottom:50px;border-bottom:1px solid rgba(255,255,255,.12)}
+.chan-moi h2{color:#fff;font-size:clamp(2rem,5vw,3.6rem);margin-bottom:26px}
+.chan-moi .kenh{display:flex;gap:10px;flex-wrap:wrap}
+.chan-moi .nut.vien{color:#fff}
+.chan-moi .nut.vien:hover{background:#fff;color:var(--toi);border-color:#fff}

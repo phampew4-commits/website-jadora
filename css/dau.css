@@ -168,3 +168,20 @@ h1,h2,h3{text-wrap:balance}
   .d-tk{display:none}
   .d-goi{grid-template-columns:1fr}
 }
+
+/* ---- rê chuột vào thẻ sản phẩm: video (nếu có) hoặc ảnh thứ hai ---- */
+.sp-anh video.re,.sp2-anh>a video.re{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s;z-index:1;pointer-events:none}
+.co-video video.re{opacity:1}
+.sp2-anh>a{position:relative;display:block;overflow:hidden}
+.sp2-anh .sau{position:absolute;inset:0;opacity:0;transition:opacity .55s}
+.sp2-anh .sau img{width:100%;height:100%;object-fit:cover}
+.sp2:hover .sp2-anh .sau{opacity:1}
+/* thẻ đổi ảnh thì không nghiêng ảnh nữa, chỉ phóng nhẹ */
+.sp2:hover .sp2-anh img{transform:scale(1.04)}
+.sp2-the{z-index:3}
+.sp .the,.sp .sp-them{z-index:2}
+/* trang chi tiết: nút xem video */
+.ct2-phat{position:absolute;left:16px;bottom:14px;z-index:3;background:rgba(255,253,248,.92);color:var(--muc);border-radius:999px;padding:7px 16px;font-size:.75rem;letter-spacing:.08em;transition:background .3s}
+.ct2-phat:hover{background:#fff}
+.ct2-khung{position:relative}
+.ct2-khung video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}

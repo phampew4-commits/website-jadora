@@ -1,3 +1,5 @@
 .DS_Store
 __pycache__/
 *.pyc
+# ảnh nén từ app: không dùng nữa, web lấy ảnh từ Drive
+img/sp/

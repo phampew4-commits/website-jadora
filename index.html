@@ -8,12 +8,12 @@
 <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/mau.css">
-<link rel="stylesheet" href="css/hieu-ung.css">
-<link rel="stylesheet" href="css/khop-mau.css">
-<link rel="stylesheet" href="css/dau.css">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=261114091610">
+<link rel="stylesheet" href="css/mau.css?v=261114091610">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261114091610">
+<link rel="stylesheet" href="css/khop-mau.css?v=261114091610">
+<link rel="stylesheet" href="css/dau.css?v=261114091610">
 </head>
 <body>
 <div id="dau"></div>
@@ -152,9 +152,9 @@
 
 <div id="chan"></div>
 
-<script src="js/chung.js"></script>
-<script src="js/hieu-ung.js"></script>
-<script src="js/dau.js"></script>
+<script src="js/chung.js?v=261114091610"></script>
+<script src="js/hieu-ung.js?v=261114091610"></script>
+<script src="js/dau.js?v=261114091610"></script>
 <script>
 var ICON = {
   khien:'<svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.9-8 9-4.8-1.1-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>',
@@ -197,7 +197,7 @@ khoiDong(function(){
       ? '<video class="nen-bia" muted loop playsinline preload="'+(i?'none':'auto')+'" poster="'+e(hinhBia)+'"'+(i?' data-src="'+e(t.video)+'"':' autoplay src="'+e(t.video)+'"')+'></video>'
       : '<img class="nen-bia" '+(i?'data-src':'fetchpriority="high" src')+'="'+e(hinhBia)+'" alt="" decoding="async" referrerpolicy="no-referrer">';
     return '<div class="tam'+(i?'':' hien')+'">'+nen+
-      '<div class="chu"><p class="nhan">'+e(t.nhan)+'</p><h1><span class="dg"><span>'+nd(t.td)+'</span></span></h1>'+
+      '<div class="chu"><p class="nhan">'+e(t.nhan||t.sp.ten)+'</p><h1><span class="dg"><span>'+nd(t.td)+'</span></span></h1>'+
       '<a class="nut vien" href="'+linkSp(t.sp)+'">Xem chuỗi này</a></div></div>'}).join(''));
   var taiBia=function(){setTimeout(function(){$$('#hero img[data-src]').forEach(function(im){im.src=im.dataset.src;im.removeAttribute('data-src')})},600)};
   if(document.readyState==='complete') taiBia(); else addEventListener('load',taiBia);
@@ -211,9 +211,9 @@ khoiDong(function(){
   /* 3. hàng trượt 16 món */
   var thich={}; try{thich=JSON.parse(localStorage.getItem('jadora_thich'))||{}}catch(x){}
   $('#moi').innerHTML=moiNhat.slice(0,16).map(function(x){
-    return '<li><article class="sp2">'+
+    return '<li><article class="sp2" data-ma="'+e(x.ma)+'">'+
       '<div class="sp2-anh"><p class="sp2-the">'+e((LOAI[x.loai]||{}).ngan||'')+'</p>'+
-        '<a href="'+linkSp(x)+'">'+img(x.anh[0],480,x.ten)+'</a>'+
+        '<a href="'+linkSp(x)+'">'+img(x.anh[0],480,x.ten)+(x.anh[1]?'<span class="sau">'+img(x.anh[1],480)+'</span>':'')+'</a>'+
         '<div class="sp2-thanh"><button class="nut dac them-gio" type="button" data-ma="'+e(x.ma)+'">'+ICON.tui+'Thêm vào giỏ</button>'+
         '<button class="sp2-tim'+(thich[x.ma]?' bat':'')+'" type="button" data-thich="'+e(x.ma)+'" aria-label="Yêu thích">'+ICON.tim+'</button></div></div>'+
       '<h3><a href="'+linkSp(x)+'">'+e(x.ten)+'</a></h3><div class="sp2-gia">'+gia(x.gia)+'</div></article></li>'}).join('');

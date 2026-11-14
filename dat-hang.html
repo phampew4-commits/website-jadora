@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đặt hàng · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/hieu-ung.css">
+<link rel="stylesheet" href="css/dau.css">
+</head>
+<body>
+<div id="dau"></div>
+
+<main class="bb" id="trang"></main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js"></script>
+<script src="js/hieu-ung.js"></script>
+<script src="js/dau.js"></script>
+<script>
+var KHOA_DON='jadora_don';
+function taoMa(){var d=new Date();function p(n){return (n<10?'0':'')+n} return 'JD'+p(d.getDate())+p(d.getMonth()+1)+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
+function chuDon(d){
+  return ['ĐƠN HÀNG '+d.ma,'Khách: '+d.ten+' - '+d.sdt,'Địa chỉ: '+d.diaChi]
+    .concat(d.mon.map(function(m){return '• '+m.ten+' (mã '+m.ma+') x'+m.sl+' = '+gia(m.gia*m.sl)}))
+    .concat(['Giao hàng: '+(d.ship?gia(d.ship):'Miễn phí'),'TỔNG: '+gia(d.tong),'Thanh toán: '+(d.tt==='ck'?'Chuyển khoản':'Nhận hàng trả tiền (COD)')])
+    .concat(d.ghiChu?['Ghi chú: '+d.ghiChu]:[]).join('\n');
+}
+function veForm(){
+  var ds=monGio();
+  if(!ds.length){
+    $('#trang').innerHTML='<div class="trang-dau"><h1>Đặt hàng</h1></div><div class="trong-rong"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg><b>Giỏ của bạn đang trống.</b><p>Thêm vài món vào giỏ rồi quay lại đây nhé.</p><a class="nut dac" href="san-pham.html">Tiếp tục xem hàng</a></div>';
+    return;
+  }
+  var hang=tienHang(), ship=phiShip();
+  $('#trang').innerHTML='<div class="trang-dau"><p class="nhan">Bước cuối</p><h1>Đặt hàng</h1></div>'+
+  '<div class="gio-luoi"><form class="form" id="f" novalidate>'+
+    '<div class="doi"><div class="o"><label for="ten">Họ và tên</label><input id="ten" name="ten" autocomplete="name" required></div>'+
+    '<div class="o"><label for="sdt">Số điện thoại</label><input id="sdt" name="sdt" type="tel" inputmode="numeric" autocomplete="tel" required></div></div>'+
+    '<div class="o"><label for="diaChi">Địa chỉ nhận hàng</label><input id="diaChi" name="diaChi" autocomplete="street-address" placeholder="Số nhà, đường, phường/xã, tỉnh/thành" required></div>'+
+    '<div class="o"><label for="ghiChu">Ghi chú (không bắt buộc)</label><textarea id="ghiChu" name="ghiChu" placeholder="Cỡ tay, giờ nhận hàng, lời nhắn…"></textarea></div>'+
+    '<div class="o"><label>Cách thanh toán</label><div class="chon-tt">'+
+      '<label><input type="radio" name="tt" value="cod" checked><span><b>Nhận hàng rồi trả tiền (COD)</b><small>Mở hộp kiểm tra trước khi thanh toán.</small></span></label>'+
+      '<label><input type="radio" name="tt" value="ck"><span><b>Chuyển khoản trước</b><small>Cửa hàng xác nhận và gửi hàng ngay trong ngày.</small></span></label>'+
+    '</div></div>'+
+    '<p class="loi" id="loi" hidden></p>'+
+    '<button class="nut dac rong" type="submit">Xác nhận đặt hàng</button>'+
+  '</form>'+
+  '<aside class="tom-tat"><h3>Đơn của bạn</h3>'+
+    ds.map(function(m){return '<div class="dong"><span>'+e(m.x.ten)+' × '+m.sl+'</span><span>'+gia(m.x.gia*m.sl)+'</span></div>'}).join('')+
+    '<div class="dong" style="border-top:1px solid var(--vien);margin-top:8px;padding-top:14px"><span>Giao hàng</span><span>'+(ship?gia(ship):'Miễn phí')+'</span></div>'+
+    '<div class="dong tong"><span>Tổng</span><span>'+gia(hang+ship)+'</span></div>'+
+    '<p style="margin:16px 0 0"><a class="gio-xoa" href="gio-hang.html">Sửa giỏ hàng</a></p>'+
+  '</aside></div>';
+
+  var hs={}; try{hs=JSON.parse(localStorage.getItem('jadora_ho_so'))||{}}catch(x){}
+  ['ten','sdt','diaChi'].forEach(function(k){if(hs[k]) $('#f')[k].value=hs[k]});
+  $('#f').onsubmit=function(ev){
+    ev.preventDefault();
+    var f=this, loi=$('#loi'), sdt=f.sdt.value.replace(/[\s.\-]/g,'');
+    var l='';
+    if(f.ten.value.trim().length<2) l='Bạn điền giúp họ tên nhé.';
+    else if(!/^(0|\+84)\d{9,10}$/.test(sdt)) l='Số điện thoại chưa đúng, bạn xem lại giúp.';
+    else if(f.diaChi.value.trim().length<8) l='Bạn điền đầy đủ địa chỉ nhận hàng nhé.';
+    if(l){loi.textContent=l; loi.hidden=false; return}
+    var don={ma:taoMa(),luc:new Date().toISOString(),ten:f.ten.value.trim(),sdt:sdt,diaChi:f.diaChi.value.trim(),ghiChu:f.ghiChu.value.trim(),tt:f.tt.value,
+      mon:ds.map(function(m){return {ma:m.x.ma,ten:m.x.ten,gia:m.x.gia||0,sl:m.sl}}),hang:hang,ship:ship,tong:hang+ship};
+    try{var cu=JSON.parse(localStorage.getItem(KHOA_DON))||[]; cu.push(don); localStorage.setItem(KHOA_DON,JSON.stringify(cu))}catch(x){}
+    try{localStorage.setItem('jadora_ho_so',JSON.stringify({ten:don.ten,sdt:don.sdt,diaChi:don.diaChi}))}catch(x){}
+    GIO={}; luuGio(); veXong(don); scrollTo(0,0);
+  };
+}
+function veXong(d){
+  var L=CH.lienHe||{}, T=CH.thanhToan||{}, chu=chuDon(d);
+  var nd=(T.noiDungMau||'{madon}').replace('{madon}',d.ma);
+  var coTk=T.soTaiKhoan&&T.maNganHang;
+  var ck='';
+  if(d.tt==='ck'){
+    ck=coTk?
+      '<div class="hop-ck"><h3 style="margin-bottom:14px">Thông tin chuyển khoản</h3>'+
+      '<img class="qr" alt="Mã QR chuyển khoản" src="https://img.vietqr.io/image/'+encodeURIComponent(T.maNganHang)+'-'+encodeURIComponent(T.soTaiKhoan)+'-compact2.png?amount='+d.tong+'&addInfo='+encodeURIComponent(nd)+'">'+
+      '<div class="dong"><span>Ngân hàng</span><b>'+e(T.nganHang)+'</b></div>'+
+      '<div class="dong"><span>Số tài khoản</span><b>'+e(T.soTaiKhoan)+'</b></div>'+
+      '<div class="dong"><span>Chủ tài khoản</span><b>'+e(T.chuTaiKhoan)+'</b></div>'+
+      '<div class="dong"><span>Số tiền</span><b>'+gia(d.tong)+'</b></div>'+
+      '<div class="dong"><span>Nội dung</span><b>'+e(nd)+'</b></div></div>'
+      :'<div class="hop-ck"><p style="margin:0">Cửa hàng sẽ gửi thông tin chuyển khoản cho bạn qua Zalo hoặc điện thoại ngay sau khi nhận đơn.</p></div>';
+  }
+  $('#trang').innerHTML='<div class="xong">'+
+    '<p class="nhan">Đã ghi nhận</p><h1>Cảm ơn <em>'+e(d.ten.split(' ').pop())+'</em></h1>'+
+    '<div class="ma-don">'+e(d.ma)+'</div>'+
+    '<p>Bấm một trong các nút dưới để gửi đơn cho cửa hàng. Chúng tôi sẽ gọi xác nhận trước khi gửi hàng.</p>'+
+    ck+
+    '<div class="gui-kenh">'+
+      '<button class="nut dac rong" id="gui-zalo" type="button">Sao chép đơn &amp; mở Zalo</button>'+
+      (L.messenger?'<a class="nut vien rong" target="_blank" rel="noopener" href="https://m.me/'+e(L.messenger)+'?text='+encodeURIComponent(chu)+'">Gửi đơn qua Messenger</a>':'')+
+      '<a class="nut vien rong" href="tel:'+e(L.sdt)+'">Gọi '+e(L.sdt)+'</a>'+
+    '</div>'+
+    '<div class="hop-ck"><pre style="white-space:pre-wrap;font:inherit;font-size:.9rem;margin:0">'+e(chu)+'</pre></div>'+
+    '<a class="gio-xoa" href="san-pham.html">Tiếp tục xem hàng</a>'+
+  '</div>';
+  $('#gui-zalo').onclick=function(){
+    var mo=function(){window.open('https://zalo.me/'+(L.zalo||L.sdt),'_blank','noopener')};
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(chu).then(function(){bao('Đã sao chép đơn — dán vào Zalo để gửi'); mo()},mo);
+    else mo();
+  };
+}
+khoiDong(veForm);
+</script>
+</body>
+</html>

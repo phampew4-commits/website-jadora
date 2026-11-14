@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Câu chuyện · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/hieu-ung.css">
+<link rel="stylesheet" href="css/dau.css">
+</head>
+<body>
+<div id="dau"></div>
+
+<main>
+  <div class="bb trang-dau">
+    <p class="nhan">Câu chuyện</p>
+    <h1>Câu chuyện</h1>
+    <p style="margin-top:22px;font-size:1.08rem;max-width:680px">Chúng tôi bắt đầu từ một quầy nhỏ bán phỉ thuý, nơi khách cầm từng viên ngọc lên soi dưới đèn trước khi quyết định. Trang web này giữ đúng tinh thần đó: ảnh thật, giá thật, và một người thật trả lời khi bạn nhắn.</p>
+  </div>
+
+  <section class="quy-trinh">
+    <div class="bb qt-luoi">
+      <div class="len">
+        <p class="nhan" style="color:rgba(255,255,255,.5)">Cách chúng tôi làm</p>
+        <h2>Ba bước, <em>không vội</em></h2>
+      </div>
+      <div class="qt-ds" id="quy-trinh"></div>
+    </div>
+  </section>
+
+  <section class="khoi">
+    <div class="bb" style="max-width:760px">
+      <div class="dau-khoi len"><p class="nhan">Sắp tới</p><h2>Thêm đồ <em>thủ công</em></h2></div>
+      <p class="len">Bên cạnh phỉ thuý, chúng tôi đang chuẩn bị một dòng đồ làm tay: dây thắt nút, túi vải đựng trang sức, hộp gỗ. Cùng một nguyên tắc — số lượng ít, làm kỹ, và nói rõ món đó được làm ra như thế nào.</p>
+      <p class="len" style="text-align:center;margin-top:40px"><a class="nut toi" href="san-pham.html">Xem sản phẩm</a></p>
+    </div>
+  </section>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js"></script>
+<script src="js/hieu-ung.js"></script>
+<script src="js/dau.js"></script>
+<script>
+khoiDong(function(){
+  $('#quy-trinh').innerHTML=(CH.quyTrinh||[]).map(function(q){
+    return '<div class="qt-mon len"><div class="qt-so">'+e(q.so)+'</div><div><h3>'+nd(q.ten)+'</h3><p>'+e(q.chu)+'</p></div></div>'}).join('');
+});
+</script>
+</body>
+</html>

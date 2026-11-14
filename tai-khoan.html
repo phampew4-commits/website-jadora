@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tài khoản · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/hieu-ung.css">
+<link rel="stylesheet" href="css/dau.css">
+</head>
+<body>
+<div id="dau"></div>
+
+<main class="bb">
+  <div class="trang-dau"><h1>Tài khoản</h1></div>
+  <div class="tk">
+    <section>
+      <h3>Thông tin nhận hàng</h3>
+      <p class="tk-ghi">Lưu trên thiết bị này để tự điền khi bạn đặt hàng. Bản thử chưa có đăng nhập, nên thông tin không theo bạn sang máy khác.</p>
+      <form class="form" id="f" novalidate>
+        <div class="o"><label for="ten">Họ và tên</label><input id="ten" name="ten" autocomplete="name"></div>
+        <div class="o"><label for="sdt">Số điện thoại</label><input id="sdt" name="sdt" type="tel" inputmode="numeric" autocomplete="tel"></div>
+        <div class="o"><label for="diaChi">Địa chỉ nhận hàng</label><input id="diaChi" name="diaChi" autocomplete="street-address" placeholder="Số nhà, đường, phường/xã, tỉnh/thành"></div>
+        <button class="nut dac" type="submit" style="justify-self:start">Lưu thông tin</button>
+      </form>
+      <p style="margin-top:30px"><a class="gio-xoa" href="san-pham.html?thich=1">Xem món đã lưu yêu thích →</a></p>
+    </section>
+    <section>
+      <h3>Đơn đã đặt trên thiết bị này</h3>
+      <div id="don"></div>
+    </section>
+  </div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js"></script>
+<script src="js/hieu-ung.js"></script>
+<script src="js/dau.js"></script>
+<script>
+khoiDong(function(){
+  var hs={}; try{hs=JSON.parse(localStorage.getItem('jadora_ho_so'))||{}}catch(x){}
+  var f=$('#f'); ['ten','sdt','diaChi'].forEach(function(k){f[k].value=hs[k]||''});
+  f.onsubmit=function(ev){ev.preventDefault();
+    try{localStorage.setItem('jadora_ho_so',JSON.stringify({ten:f.ten.value.trim(),sdt:f.sdt.value.trim(),diaChi:f.diaChi.value.trim()}))}catch(x){}
+    bao('Đã lưu thông tin')};
+  var don=[]; try{don=JSON.parse(localStorage.getItem('jadora_don'))||[]}catch(x){}
+  $('#don').innerHTML=don.length? don.slice().reverse().map(function(d){
+    var ng=new Date(d.luc);
+    return '<div class="tk-don"><b>'+e(d.ma)+'</b><small>'+ng.toLocaleDateString('vi-VN')+'</small>'+
+      '<ul>'+d.mon.map(function(m){return '<li>'+e(m.ten)+' × '+m.sl+'</li>'}).join('')+'</ul>'+
+      '<div class="tong"><span>'+(d.tt==='ck'?'Chuyển khoản':'Nhận hàng trả tiền')+'</span><span>'+gia(d.tong)+'</span></div></div>'}).join('')
+    : '<p class="tk-ghi">Bạn chưa đặt đơn nào trên thiết bị này.</p><a class="nut vien" href="san-pham.html">Xem sản phẩm</a>';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+{
+  "thuongHieu": {
+    "ten": "Jadora",
+    "tenDay": "Jadora — Ngọc phỉ thuý & đồ thủ công",
+    "slogan": "Ngọc thật, chọn bằng tay",
+    "moTaNgan": "Phỉ thuý tự nhiên và charm vàng 18K, mỗi món được chọn và xâu bằng tay."
+  },
+  "lienHe": {
+    "sdt": "0888226862",
+    "zalo": "0888226862",
+    "zaloOA": "",
+    "messenger": "ngoctramstore.bn",
+    "instagram": "https://www.instagram.com/ngc.trm.store/",
+    "tiktok": "https://www.tiktok.com/@ngc.trm.store2025",
+    "facebook": "https://www.facebook.com/ngoctramstore.bn",
+    "diaChi": "1S Trần Hưng Đạo, Kinh Bắc, Bắc Ninh",
+    "banDo": "https://maps.app.goo.gl/LWLCGFmZdy5EG5oR8",
+    "gio": "8:30 – 21:30 mỗi ngày"
+  },
+  "thanhToan": {
+    "nganHang": "",
+    "maNganHang": "",
+    "soTaiKhoan": "",
+    "chuTaiKhoan": "",
+    "noiDungMau": "Jadora {madon}"
+  },
+  "vanChuyen": {
+    "phi": 30000,
+    "mienPhiTu": 1500000,
+    "ghiChu": "Miễn phí giao toàn quốc cho đơn từ 1.500.000đ"
+  },
+  "camKet": [
+    {
+      "icon": "khien",
+      "chu": "Ảnh thật từng món"
+    },
+    {
+      "icon": "hop",
+      "chu": "Quay video trước khi gửi"
+    },
+    {
+      "icon": "xe",
+      "chu": "Giao toàn quốc"
+    },
+    {
+      "icon": "tay",
+      "chu": "Kiểm hàng rồi trả tiền"
+    }
+  ],
+  "quyTrinh": [
+    {
+      "so": "01",
+      "nhan": "Bước một",
+      "ten": "Chọn *từng viên*",
+      "chu": "Ngọc về cửa hàng được xem từng viên một. Viên nào không đạt màu và độ trong mong muốn thì để riêng."
+    },
+    {
+      "so": "02",
+      "nhan": "Bước hai",
+      "ten": "Phối *charm vàng*",
+      "chu": "Chuỗi được phối cùng charm vàng 18K sao cho hài hoà với sắc ngọc, không lấn át viên đá."
+    },
+    {
+      "so": "03",
+      "nhan": "Bước ba",
+      "ten": "Xâu *bằng tay*",
+      "chu": "Từng viên được xâu và chỉnh bằng tay cho tới khi chuỗi nằm đều trên cổ tay."
+    },
+    {
+      "so": "04",
+      "nhan": "Bước bốn",
+      "ten": "Chụp và *quay thật*",
+      "chu": "Ảnh trên web là ảnh của đúng món đó. Trước khi gửi, cửa hàng quay video để bạn xem lại."
+    },
+    {
+      "so": "05",
+      "nhan": "Bước năm",
+      "ten": "Đóng hộp, *gửi đi*",
+      "chu": "Mỗi món được đóng hộp, chèn chống sốc. Bạn được kiểm tra hàng trước khi thanh toán."
+    }
+  ],
+  "hoiDap": [
+    {
+      "icon": "xe",
+      "hoi": "Bao lâu thì nhận được hàng?",
+      "dap": "Miền Bắc 2–3 ngày, miền Trung và miền Nam 3–5 ngày kể từ khi cửa hàng gửi."
+    },
+    {
+      "icon": "khien",
+      "hoi": "Có được kiểm hàng trước khi trả tiền?",
+      "dap": "Có. Với đơn COD bạn được mở hộp kiểm tra trước khi thanh toán. Đơn giá trị cao cửa hàng xin bạn cọc trước."
+    },
+    {
+      "icon": "hop",
+      "hoi": "Hàng được đóng gói thế nào?",
+      "dap": "Mỗi món được đóng hộp, chèn chống sốc cẩn thận, và được quay video trước khi gửi."
+    },
+    {
+      "icon": "tay",
+      "hoi": "Nhận hàng không đúng thì sao?",
+      "dap": "Đổi trong 1 ngày kể từ khi nhận nếu món không đúng mô tả, khác ảnh hoặc lỗi do vận chuyển. Cửa hàng chịu phí ship hai chiều."
+    },
+    {
+      "icon": "xe",
+      "hoi": "Phí giao hàng bao nhiêu?",
+      "dap": "Miễn phí giao toàn quốc cho đơn từ 1.500.000đ. Đơn nhỏ hơn tính phí theo đơn vị giao hàng."
+    },
+    {
+      "icon": "khien",
+      "hoi": "Charm vàng có phải vàng tích sản?",
+      "dap": "Không. Charm vàng là charm trang sức, không phải vàng tích sản."
+    }
+  ],
+  "cauNoi": [
+    {
+      "cau": "Không có hai viên phỉ thuý nào giống nhau, *nên ảnh bạn xem phải là của đúng món bạn nhận.*",
+      "ten": ""
+    },
+    {
+      "cau": "Trước khi gửi, chúng tôi quay video món hàng *để bạn xem lại một lần nữa.*",
+      "ten": ""
+    },
+    {
+      "cau": "Bạn mở hộp, kiểm tra tận tay, *rồi mới thanh toán.*",
+      "ten": ""
+    }
+  ],
+  "lookbook": {
+    "ma": "25362",
+    "anh": 1,
+    "canh": "50% 38%",
+    "diem": [
+      {
+        "ten": "Charm hoa mai vàng 18K",
+        "charm": "19801",
+        "x": 63.9,
+        "y": 36.2,
+        "ym": 36.8
+      },
+      {
+        "ten": "Charm lu đính đá vàng 18K",
+        "charm": "",
+        "x": 52.2,
+        "y": 43.7,
+        "ym": 41.8
+      },
+      {
+        "ten": "Charm hồ điệp phỉ thuý lam băng vàng 18K",
+        "charm": "25776",
+        "x": 46.7,
+        "y": 67.8,
+        "ym": 57.9
+      }
+    ]
+  },
+  "bia": [
+    {
+      "ma": "16137",
+      "video": "video/bia-1.mp4",
+      "nhan": "Phỉ thuý. Hoà điền. Vàng 18K.",
+      "td": "Ngọc thật. *Chọn bằng tay.*"
+    },
+    {
+      "ma": "22899-2",
+      "video": "video/bia-2.mp4",
+      "nhan": "Mỗi chuỗi một sắc xanh",
+      "td": "Không viên nào *lặp lại.*"
+    },
+    {
+      "ma": "18117",
+      "video": "video/bia-3.mp4",
+      "nhan": "Tự phối theo ý bạn",
+      "td": "Charm vàng, *của riêng bạn.*"
+    }
+  ],
+  "thanhBao": [
+    {
+      "chu": "Miễn phí giao toàn quốc cho đơn từ 1.500.000đ",
+      "link": "san-pham.html"
+    },
+    {
+      "chu": "Kiểm hàng rồi mới trả tiền",
+      "link": "lien-he.html#giao"
+    },
+    {
+      "chu": "Quay video món hàng trước khi gửi",
+      "link": "lien-he.html#giao"
+    }
+  ]
+}

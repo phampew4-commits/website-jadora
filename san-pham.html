@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sản phẩm · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/hieu-ung.css">
+<link rel="stylesheet" href="css/dau.css">
+</head>
+<body>
+<div id="dau"></div>
+
+<main class="bb">
+  <div class="trang-dau">
+    <p class="nhan">Cửa hàng</p>
+    <h1 id="tieu-de">Sản phẩm</h1>
+  </div>
+
+  <div class="loc-thanh">
+    <div class="loc-trai"><div class="loc-nhom" id="loc"></div><p class="dem" id="dem"></p></div>
+    <div class="loc-phai">
+    <label class="o-tim"><span aria-hidden="true">⌕</span><input id="tim" type="search" placeholder="Tìm tên hoặc mã…" autocomplete="off"></label>
+    <select class="sx" id="sx" aria-label="Sắp xếp">
+      <option value="moi">Mới nhất</option>
+      <option value="tang">Giá thấp → cao</option>
+      <option value="giam">Giá cao → thấp</option>
+    </select>
+    </div>
+  </div>
+
+  <div class="luoi sat" id="luoi"></div>
+  <p style="text-align:center;margin:50px 0 100px"><button class="nut vien" id="them" type="button">Xem thêm</button></p>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js"></script>
+<script src="js/hieu-ung.js"></script>
+<script src="js/dau.js"></script>
+<script>
+var chiThich=false, loc='tat', tu='', sx='moi', soHien=0, MOI_LAN=16, kq=[];
+function locDs(){
+  var t=boDau(tu.trim()), dsThich=chiThich?docThich():{};
+  kq=DS.filter(function(x){
+    if(chiThich && !dsThich[x.ma]) return false;
+    if(loc!=='tat' && x.loai!==loc) return false;
+    if(t && boDau(x.ten+' '+x.ma).indexOf(t)<0) return false;
+    return true;
+  });
+  if(sx==='moi') kq.sort(function(a,b){return ngaySo(b.ngay)-ngaySo(a.ngay)});
+  else if(sx==='tang') kq.sort(function(a,b){return (a.gia||0)-(b.gia||0)});
+  else kq.sort(function(a,b){return (b.gia||0)-(a.gia||0)});
+}
+function ve(lamLai){
+  if(lamLai){locDs(); soHien=0; $('#luoi').innerHTML=''}
+  var doan=kq.slice(soHien,soHien+MOI_LAN);
+  $('#luoi').insertAdjacentHTML('beforeend',doan.map(theSp).join(''));
+  soHien+=doan.length;
+  $('#dem').textContent=kq.length? kq.length+' sản phẩm' : (chiThich?'Bạn chưa lưu món nào. Bấm hình tim trên món bạn thích.':'Không tìm thấy sản phẩm nào');
+  $('#them').style.display=soHien<kq.length?'':'none';
+  $('#tieu-de').innerHTML=chiThich?'Yêu thích':(loc==='tat'?'Sản phẩm':e(LOAI[loc].ten));
+}
+khoiDong(function(){
+  var q=new URLSearchParams(location.search);
+  chiThich=q.get('thich')==='1';
+  if(LOAI[q.get('loai')]) loc=q.get('loai');
+  if(q.get('tim')){tu=q.get('tim');$('#tim').value=tu}
+  var nut=[['tat','Tất cả']].concat(THU_TU.filter(function(k){return DS.some(function(x){return x.loai===k})}).map(function(k){return [k,LOAI[k].ngan]}));
+  $('#loc').innerHTML=nut.map(function(n){return '<button type="button" data-k="'+n[0]+'"'+(n[0]===loc?' class="chon"':'')+'>'+n[1]+'</button>'}).join('');
+  $('#loc').onclick=function(ev){
+    var b=ev.target.closest('button'); if(!b) return;
+    loc=b.dataset.k; $$('#loc button').forEach(function(x){x.classList.toggle('chon',x===b)});
+    history.replaceState(null,'',loc==='tat'?'san-pham.html':'san-pham.html?loai='+loc);
+    ve(true);
+  };
+  var h; $('#tim').oninput=function(){tu=this.value; clearTimeout(h); h=setTimeout(function(){ve(true)},180)};
+  $('#sx').onchange=function(){sx=this.value; ve(true)};
+  $('#them').onclick=function(){ve(false)};
+  ve(true);
+});
+</script>
+</body>
+</html>

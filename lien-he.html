@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Liên hệ · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/hieu-ung.css">
+<link rel="stylesheet" href="css/dau.css">
+</head>
+<body>
+<div id="dau"></div>
+
+<main class="bb">
+  <div class="trang-dau">
+    <p class="nhan">Liên hệ</p>
+    <h1>Liên hệ</h1>
+    <p style="margin-top:18px;max-width:560px">Hỏi về một món, nhờ phối chuỗi riêng, hay chỉ cần xem thêm ảnh — kênh nào tiện cho bạn cũng được.</p>
+  </div>
+  <div class="gui-kenh" id="kenh" style="max-width:420px;margin:0 0 60px"></div>
+
+  <div class="xep" style="margin-bottom:100px;max-width:820px">
+    <details open id="giao"><summary>Giao hàng</summary><div class="noi"><ul>
+      <li id="ghi-chu-ship"></li>
+      <li>Miền Bắc 2–3 ngày, miền Trung và miền Nam 3–5 ngày.</li>
+      <li>Mỗi món được đóng hộp, chèn chống sốc và quay video trước khi gửi.</li>
+      <li>Được mở hộp kiểm tra trước khi thanh toán (COD).</li>
+    </ul></div></details>
+    <details id="doi"><summary>Đổi trả</summary><div class="noi"><ul>
+      <li>Đổi trong vòng 1 ngày kể từ khi nhận nếu món không đúng mô tả, khác ảnh hoặc lỗi do vận chuyển.</li>
+      <li>Cửa hàng chịu phí ship hai chiều trong trường hợp trên.</li>
+    </ul></div></details>
+    <details><summary>Cửa hàng</summary><div class="noi" id="cua-hang"></div></details>
+  </div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js"></script>
+<script src="js/hieu-ung.js"></script>
+<script src="js/dau.js"></script>
+<script>
+khoiDong(function(){
+  var L=CH.lienHe||{};
+  var k=['<a class="nut dac rong" target="_blank" rel="noopener" href="https://zalo.me/'+e(L.zalo||L.sdt)+'">Nhắn Zalo</a>'];
+  if(L.messenger) k.push('<a class="nut vien rong" target="_blank" rel="noopener" href="https://m.me/'+e(L.messenger)+'">Nhắn Messenger</a>');
+  if(L.instagram) k.push('<a class="nut vien rong" target="_blank" rel="noopener" href="'+e(L.instagram)+'">Instagram</a>');
+  if(L.tiktok) k.push('<a class="nut vien rong" target="_blank" rel="noopener" href="'+e(L.tiktok)+'">TikTok</a>');
+  k.push('<a class="nut vien rong" href="tel:'+e(L.sdt)+'">Gọi '+e(L.sdt)+'</a>');
+  $('#kenh').innerHTML=k.join('');
+  $('#ghi-chu-ship').textContent=(CH.vanChuyen||{}).ghiChu||'';
+  $('#cua-hang').innerHTML='<ul><li>'+e(L.diaChi||'')+'</li><li>Mở cửa '+e(L.gio||'')+'</li>'+(L.banDo?'<li><a href="'+e(L.banDo)+'" target="_blank" rel="noopener" style="text-decoration:underline">Xem bản đồ</a></li>':'')+'</ul>';
+  if(location.hash){var d=$(location.hash); if(d&&d.tagName==='DETAILS') d.open=true}
+});
+</script>
+</body>
+</html>

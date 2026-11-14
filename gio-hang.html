@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Giỏ hàng · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/hieu-ung.css">
+<link rel="stylesheet" href="css/dau.css">
+</head>
+<body>
+<div id="dau"></div>
+
+<main class="bb">
+  <div class="trang-dau"><p class="nhan">Của bạn</p><h1>Giỏ hàng</h1></div>
+  <div id="gio"></div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js"></script>
+<script src="js/hieu-ung.js"></script>
+<script src="js/dau.js"></script>
+<script>
+function veGio(){
+  var ds=monGio();
+  if(!ds.length){
+    $('#gio').innerHTML='<div class="trong-rong"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg><b>Giỏ của bạn đang trống.</b><p>Có vẻ bạn chưa thêm món nào vào giỏ.</p><a class="nut dac" href="san-pham.html">Tiếp tục xem hàng</a></div>';
+    return;
+  }
+  var hang=tienHang(), ship=phiShip(), V=CH.vanChuyen||{};
+  var con=(V.mienPhiTu||0)-hang;
+  $('#gio').innerHTML='<div class="gio-luoi"><div>'+
+    ds.map(function(m){var x=m.x;
+      return '<div class="gio-mon" data-ma="'+e(x.ma)+'">'+
+        '<a href="'+linkSp(x)+'"><img src="'+anh(x.anh[0],240)+'" alt="'+e(x.ten)+'" referrerpolicy="no-referrer"></a>'+
+        '<div><h3><a href="'+linkSp(x)+'">'+e(x.ten)+'</a></h3><div class="ct-ma">Mã '+e(x.ma)+'</div>'+
+          '<div style="margin-top:6px">'+gia(x.gia)+'</div><button class="gio-xoa" type="button">Xoá</button></div>'+
+        '<div class="so-luong"><button type="button" data-d="-1" aria-label="Bớt">−</button><span>'+m.sl+'</span><button type="button" data-d="1" aria-label="Thêm">+</button></div>'+
+      '</div>'}).join('')+
+    '<p style="margin-top:26px"><a class="gio-xoa" href="san-pham.html">← Tiếp tục xem hàng</a></p>'+
+    '</div>'+
+    '<aside class="tom-tat"><h3>Tóm tắt đơn</h3>'+
+      '<div class="dong"><span>Tiền hàng</span><span>'+gia(hang)+'</span></div>'+
+      '<div class="dong"><span>Giao hàng</span><span>'+(ship?gia(ship):'Miễn phí')+'</span></div>'+
+      (con>0?'<p style="font-size:.85rem;color:var(--nhat);margin:6px 0 0">Mua thêm '+gia(con)+' để được miễn phí giao hàng.</p>':'')+
+      '<div class="dong tong"><span>Tổng</span><span>'+gia(hang+ship)+'</span></div>'+
+      '<a class="nut dac rong" href="dat-hang.html" style="margin-top:22px">Đặt hàng</a>'+
+    '</aside></div>';
+}
+khoiDong(function(){
+  veGio();
+  $('#gio').addEventListener('click',function(ev){
+    var mon=ev.target.closest('.gio-mon'); if(!mon) return;
+    var ma=mon.dataset.ma;
+    if(ev.target.closest('.gio-xoa')){xoaGio(ma); veGio(); return}
+    var b=ev.target.closest('[data-d]');
+    if(b){datGio(ma,Math.min(99,(GIO[ma]||0)+ +b.dataset.d)); veGio()}
+  });
+});
+</script>
+</body>
+</html>

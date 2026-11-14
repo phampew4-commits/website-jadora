@@ -189,7 +189,9 @@ function veDau() {
 
   /* tìm kiếm + menu điện thoại */
   var dau = $('.dau2', el), keo = $('.d-keo', el);
-  $('.d-tim', el).onclick = function () { dau.classList.toggle('mo-tim'); if (dau.classList.contains('mo-tim')) $('.d-timo input', el).focus(); };
+  $('.d-tim', el).onclick = function () { dau.classList.toggle('mo-tim'); if (dau.classList.contains('mo-tim')) setTimeout(function () { $('.d-timo input', el).focus(); }, 120); };
+  /* bấm ra ngoài (phần trang đã mờ) thì đóng tìm kiếm */
+  document.addEventListener('pointerdown', function (ev) { if (dau.classList.contains('mo-tim') && !ev.target.closest('.dau2-trong, .d-timo')) dau.classList.remove('mo-tim'); });
   $('.d-menu', el).onclick = function () { var mo = keo.classList.toggle('mo'); this.classList.toggle('mo', mo); document.documentElement.classList.toggle('khoa-cuon', mo); };
   keo.addEventListener('click', function (ev) { if (ev.target === keo || ev.target.closest('a')) { keo.classList.remove('mo'); $('.d-menu', el).classList.remove('mo'); document.documentElement.classList.remove('khoa-cuon'); } });
   document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { dau.classList.remove('mo-tim'); keo.classList.remove('mo'); dongGio(); } });
@@ -219,4 +221,5 @@ function veDau() {
     veNganGio();
   });
   veSoGio(); veSoThich();
+  if (window.KHACH) { KHACH.veNut(); KHACH.batDau(); }   /* đăng nhập Google: hiện ảnh đại diện nếu đã đăng nhập */
 }

@@ -186,5 +186,11 @@
       "chu": "Quay video món hàng trước khi gửi",
       "link": "lien-he.html#giao"
     }
-  ]
+  ],
+  "firebase": {
+    "apiKey": "AIzaSyDegVKB3o5BHFwmoOneuM0OmFKds7QH2qI",
+    "appId": "1:655585162253:web:d71bdcf81765b5731fd144",
+    "authDomain": "braided-upgrade-476102-g7.firebaseapp.com",
+    "projectId": "braided-upgrade-476102-g7"
+  }
 }

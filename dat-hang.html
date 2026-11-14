@@ -7,9 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=261114093137">
-<link rel="stylesheet" href="css/hieu-ung.css?v=261114093137">
-<link rel="stylesheet" href="css/dau.css?v=261114093137">
+<link rel="stylesheet" href="css/style.css?v=261114102903">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261114102903">
+<link rel="stylesheet" href="css/dau.css?v=261114102903">
 </head>
 <body>
 <div id="dau"></div>
@@ -18,9 +18,10 @@
 
 <div id="chan"></div>
 
-<script src="js/chung.js?v=261114093137"></script>
-<script src="js/hieu-ung.js?v=261114093137"></script>
-<script src="js/dau.js?v=261114093137"></script>
+<script src="js/chung.js?v=261114102903"></script>
+<script src="js/hieu-ung.js?v=261114102903"></script>
+<script src="js/dau.js?v=261114102903"></script>
+<script src="js/khach.js?v=261114102903"></script>
 <script>
 var KHOA_DON='jadora_don';
 function taoMa(){var d=new Date();function p(n){return (n<10?'0':'')+n} return 'JD'+p(d.getDate())+p(d.getMonth()+1)+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
@@ -59,6 +60,7 @@ function veForm(){
 
   var hs={}; try{hs=JSON.parse(localStorage.getItem('jadora_ho_so'))||{}}catch(x){}
   ['ten','sdt','diaChi'].forEach(function(k){if(hs[k]) $('#f')[k].value=hs[k]});
+  if(window.KHACH){ var dienTen=function(u){var o=$('#f'); if(o&&u&&u.displayName&&!o.ten.value) o.ten.value=u.displayName}; KHACH.nghe.push(dienTen); if(KHACH.user) dienTen(KHACH.user) }
   $('#f').onsubmit=function(ev){
     ev.preventDefault();
     var f=this, loi=$('#loi'), sdt=f.sdt.value.replace(/[\s.\-]/g,'');
@@ -67,7 +69,7 @@ function veForm(){
     else if(!/^(0|\+84)\d{9,10}$/.test(sdt)) l='Số điện thoại chưa đúng, bạn xem lại giúp.';
     else if(f.diaChi.value.trim().length<8) l='Bạn điền đầy đủ địa chỉ nhận hàng nhé.';
     if(l){loi.textContent=l; loi.hidden=false; return}
-    var don={ma:taoMa(),luc:new Date().toISOString(),ten:f.ten.value.trim(),sdt:sdt,diaChi:f.diaChi.value.trim(),ghiChu:f.ghiChu.value.trim(),tt:f.tt.value,
+    var don={email:(window.KHACH&&KHACH.user&&KHACH.user.email)||'',ma:taoMa(),luc:new Date().toISOString(),ten:f.ten.value.trim(),sdt:sdt,diaChi:f.diaChi.value.trim(),ghiChu:f.ghiChu.value.trim(),tt:f.tt.value,
       mon:ds.map(function(m){return {ma:m.x.ma,ten:m.x.ten,gia:m.x.gia||0,sl:m.sl}}),hang:hang,ship:ship,tong:hang+ship};
     try{var cu=JSON.parse(localStorage.getItem(KHOA_DON))||[]; cu.push(don); localStorage.setItem(KHOA_DON,JSON.stringify(cu))}catch(x){}
     try{localStorage.setItem('jadora_ho_so',JSON.stringify({ten:don.ten,sdt:don.sdt,diaChi:don.diaChi}))}catch(x){}

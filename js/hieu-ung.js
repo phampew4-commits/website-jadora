@@ -221,6 +221,33 @@ function demSo(ds) {
   ds.forEach(function (el) { io.observe(el); });
 }
 
+/* 11. Mục xếp gập (<details>) trượt mở / trượt đóng thay vì bật tắt đột ngột — áp cho mọi trang */
+document.addEventListener('click', function (ev) {
+  var sm = ev.target.closest && ev.target.closest('summary'); if (!sm) return;
+  var d = sm.parentElement; if (!d || d.tagName !== 'DETAILS') return;
+  var noi = d.querySelector('.noi');
+  if (TINH || !noi || !noi.animate) return;          /* không có chuyển động: để trình duyệt tự xử lý */
+  ev.preventDefault();
+  if (d._cd) { d._cd.onfinish = null; d._cd.cancel(); }
+  var dem = getComputedStyle(noi).paddingBottom;
+  noi.style.overflow = 'hidden';
+  if (!d.open || d.classList.contains('dang-dong')) {
+    d.classList.remove('dang-dong'); d.open = true;
+    var cao = noi.offsetHeight;
+    d._cd = noi.animate([{ height: '0px', paddingBottom: '0px', opacity: 0 }, { height: cao + 'px', paddingBottom: dem, opacity: 1 }],
+      { duration: 460, easing: 'cubic-bezier(.22,1,.36,1)' });
+    var cm = d._cd, xongMo = function () { if (d._cd !== cm) return; noi.style.overflow = ''; d._cd = null; };
+    d._cd.onfinish = xongMo; setTimeout(xongMo, 520);   /* dự phòng khi trình duyệt không báo kết thúc */
+  } else {
+    var cao2 = noi.offsetHeight;
+    d.classList.add('dang-dong');
+    d._cd = noi.animate([{ height: cao2 + 'px', paddingBottom: dem, opacity: 1 }, { height: '0px', paddingBottom: '0px', opacity: 0 }],
+      { duration: 320, easing: 'cubic-bezier(.4,0,.2,1)' });
+    var cd = d._cd, xongDong = function () { if (d._cd !== cd) return; d.open = false; d.classList.remove('dang-dong'); noi.style.overflow = ''; d._cd = null; };
+    d._cd.onfinish = xongDong; setTimeout(xongDong, 380);
+  }
+});
+
 function hieuUng() {
   cuonMuot();
   var hero = document.querySelector('.hero2');

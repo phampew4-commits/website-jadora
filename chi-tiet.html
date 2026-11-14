@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=261114102903">
-<link rel="stylesheet" href="css/hieu-ung.css?v=261114102903">
-<link rel="stylesheet" href="css/dau.css?v=261114102903">
-<link rel="stylesheet" href="css/chi-tiet.css?v=261114102903">
+<link rel="stylesheet" href="css/style.css?v=261114103811">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261114103811">
+<link rel="stylesheet" href="css/dau.css?v=261114103811">
+<link rel="stylesheet" href="css/chi-tiet.css?v=261114103811">
 </head>
 <body>
 <div id="dau"></div>
@@ -20,6 +20,7 @@
   <div class="bb"><nav class="duong-dan" id="duong-dan" aria-label="Đường dẫn"></nav></div>
   <div class="bb" id="ct"></div>
   <section class="ct-buoc" id="buoc-lam"></section>
+  <section class="bb ct-cn" id="cam-nhan"></section>
   <section class="bb ct-goi" id="goi-y"></section>
 </main>
 
@@ -28,10 +29,10 @@
 
 <div id="chan"></div>
 
-<script src="js/chung.js?v=261114102903"></script>
-<script src="js/hieu-ung.js?v=261114102903"></script>
-<script src="js/dau.js?v=261114102903"></script>
-<script src="js/khach.js?v=261114102903"></script>
+<script src="js/chung.js?v=261114103811"></script>
+<script src="js/hieu-ung.js?v=261114103811"></script>
+<script src="js/dau.js?v=261114103811"></script>
+<script src="js/khach.js?v=261114103811"></script>
 <script>
 var sl=1, iAnh=0;
 khoiDong(function(){
@@ -136,6 +137,56 @@ khoiDong(function(){
   var qt=(CH.quyTrinh||[]).slice(0,3);
   if(qt.length) $('#buoc-lam').innerHTML='<div class="bb"><div class="ct-buoc-dau len"><p class="nhan">Từ viên đá đến cổ tay</p><h2>Món này <em>được làm ra</em> thế nào</h2></div>'+
     '<div class="ct-buoc-ds">'+qt.map(function(q){return '<div class="len"><b>'+e(q.so)+'</b><h3>'+nd(q.ten)+'</h3><p>'+e(q.chu)+'</p></div>'}).join('')+'</div></div>';
+
+  /* cảm nhận của khách: chỉ hiện lời thật do cửa hàng duyệt (cau-hinh › camNhan); khách viết thì lưu trên máy và gửi cho cửa hàng */
+  var KHOA_CN='jadora_cam_nhan', cnMay={}; try{cnMay=JSON.parse(localStorage.getItem(KHOA_CN))||{}}catch(x){}
+  function sao(n){var o='';for(var i=1;i<=5;i++) o+='<i class="'+(i<=n?'day':'')+'">★</i>'; return '<span class="cn-sao" aria-label="'+n+' trên 5 sao">'+o+'</span>'}
+  function veCamNhan(){
+    var duyet=(CH.camNhan||[]).filter(function(c){return c&&c.chu&&(!c.ma||c.ma===x.ma)});
+    var cuaToi=cnMay[x.ma];
+    var tb=duyet.length? duyet.reduce(function(t,c){return t+(+c.sao||5)},0)/duyet.length : 0;
+    var hs={}; try{hs=JSON.parse(localStorage.getItem('jadora_ho_so'))||{}}catch(e2){}
+    var tenSan=(window.KHACH&&KHACH.user&&KHACH.user.displayName)||hs.ten||'';
+    $('#cam-nhan').innerHTML='<div class="cn-luoi">'+
+      '<div class="cn-trai"><p class="nhan">Cảm nhận</p><h2>Khách nói gì <em>về món này</em></h2>'+
+        (duyet.length?'<p class="cn-tb"><b>'+tb.toLocaleString('vi-VN',{maximumFractionDigits:1})+'</b>'+sao(Math.round(tb))+'<span>'+duyet.length+' cảm nhận</span></p>'
+          :'<p class="cn-rong">Món này chưa có cảm nhận nào. Nếu bạn đã mua, hãy là người đầu tiên chia sẻ.</p>')+
+        '<button class="nut vien" type="button" id="cn-mo">Viết cảm nhận</button></div>'+
+      '<div class="cn-phai">'+
+        (cuaToi?'<article class="cn-the cua-toi"><div class="cn-dau">'+sao(cuaToi.sao)+'<small>Cảm nhận của bạn · đang chờ cửa hàng duyệt</small></div><p>'+e(cuaToi.chu)+'</p><b>'+e(cuaToi.ten||'Bạn')+'</b></article>':'')+
+        duyet.map(function(c){return '<article class="cn-the"><div class="cn-dau">'+sao(+c.sao||5)+(c.ngay?'<small>'+e(c.ngay)+'</small>':'')+'</div><p>'+e(c.chu)+'</p><b>'+e(c.ten||'Khách hàng')+'</b></article>'}).join('')+
+        '<form class="cn-form" id="cn-form" hidden novalidate>'+
+          '<p class="ct2-nho-td">Bạn chấm mấy sao?</p><div class="cn-chon" role="radiogroup" aria-label="Số sao">'+[1,2,3,4,5].map(function(i){return '<button type="button" data-s="'+i+'" role="radio" aria-checked="false" aria-label="'+i+' sao">★</button>'}).join('')+'</div>'+
+          '<div class="o"><label for="cn-chu">Cảm nhận của bạn</label><textarea id="cn-chu" maxlength="600" placeholder="Món nhận được có giống ảnh không, đeo lên thế nào…"></textarea></div>'+
+          '<div class="o"><label for="cn-ten">Tên hiển thị</label><input id="cn-ten" maxlength="40" value="'+e(tenSan)+'"></div>'+
+          '<p class="loi" id="cn-loi" hidden></p>'+
+          '<div class="cn-nut"><button class="nut dac" type="submit">Gửi cảm nhận</button><button class="gio-xoa" type="button" id="cn-huy">Huỷ</button></div>'+
+          '<p class="ct2-ghi">Cảm nhận được gửi cho cửa hàng qua Zalo hoặc Messenger và chỉ hiện ở đây sau khi cửa hàng duyệt.</p>'+
+        '</form>'+
+        '<div class="cn-xong" id="cn-xong" hidden></div>'+
+      '</div></div>';
+    var form=$('#cn-form'), soSao=0;
+    $('#cn-mo').onclick=function(){form.hidden=false; this.hidden=true; form.scrollIntoView({block:'center',behavior:'smooth'})};
+    $('#cn-huy').onclick=function(){form.hidden=true; $('#cn-mo').hidden=false};
+    $$('.cn-chon button').forEach(function(b){b.onclick=function(){soSao=+b.dataset.s;
+      $$('.cn-chon button').forEach(function(o){var on=+o.dataset.s<=soSao; o.classList.toggle('day',on); o.setAttribute('aria-checked',String(+o.dataset.s===soSao))})}});
+    form.onsubmit=function(ev){ev.preventDefault();
+      var chu=$('#cn-chu').value.trim(), ten=$('#cn-ten').value.trim(), loi=$('#cn-loi'), l='';
+      if(!soSao) l='Bạn chọn số sao giúp nhé.'; else if(chu.length<10) l='Bạn viết thêm vài chữ về món này nhé.';
+      if(l){loi.textContent=l; loi.hidden=false; return}
+      cnMay[x.ma]={sao:soSao,chu:chu,ten:ten,luc:new Date().toISOString()};
+      try{localStorage.setItem(KHOA_CN,JSON.stringify(cnMay))}catch(e3){}
+      var tin='CẢM NHẬN — '+x.ten+' (mã '+x.ma+')\n'+soSao+'/5 sao\n'+chu+'\n— '+(ten||'Khách');
+      veCamNhan();
+      var xong=$('#cn-xong'); xong.hidden=false;
+      xong.innerHTML='<b>Cảm ơn bạn.</b><p>Bấm một nút dưới đây để gửi cảm nhận cho cửa hàng.</p><div class="cn-nut">'+
+        '<button class="nut dac" type="button" id="cn-zalo">Sao chép &amp; mở Zalo</button>'+
+        (L.messenger?'<a class="nut vien" target="_blank" rel="noopener" href="https://m.me/'+e(L.messenger)+'?text='+encodeURIComponent(tin)+'">Gửi qua Messenger</a>':'')+'</div>';
+      $('#cn-zalo').onclick=function(){var mo=function(){window.open('https://zalo.me/'+(L.zalo||L.sdt),'_blank','noopener')};
+        if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(tin).then(function(){bao('Đã sao chép — dán vào Zalo để gửi'); mo()},mo); else mo()};
+    };
+  }
+  veCamNhan();
 
   /* gợi ý */
   var daCo={}; daCo[x.ma]=1; var goi=[];

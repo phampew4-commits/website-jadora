@@ -302,3 +302,20 @@ select.sx{border:1px solid var(--vien);border-radius:999px;padding:10px 18px;bac
 .chan-moi .kenh{display:flex;gap:10px;flex-wrap:wrap}
 .chan-moi .nut.vien{color:#fff}
 .chan-moi .nut.vien:hover{background:#fff;color:var(--toi);border-color:#fff}
+
+
+/* ---- mục xếp gập: dấu cộng xoay, tiêu đề đổi màu, các dòng hiện lần lượt ---- */
+.xep summary,.ct2-xep summary{transition:color .3s}
+.xep summary:hover,.ct2-xep summary:hover{color:var(--reu)}
+.xep summary::after,.xep details[open] summary::after{content:"+";transition:rotate .45s var(--nhay),color .3s}
+.xep details[open] summary::after,.ct2-xep details[open] summary::after{rotate:45deg;color:var(--reu)}
+.xep details.dang-dong summary::after,.ct2-xep details.dang-dong summary::after{rotate:0deg;color:var(--nhat)}
+.ct2-xep summary::after{transition:rotate .45s var(--nhay),color .3s}
+@keyframes muc-vao{from{opacity:0;translate:0 10px}to{opacity:1;translate:0 0}}
+details[open]:not(.dang-dong) .noi li{animation:muc-vao .5s var(--nhay) both}
+details[open] .noi li:nth-child(1){animation-delay:.06s}
+details[open] .noi li:nth-child(2){animation-delay:.12s}
+details[open] .noi li:nth-child(3){animation-delay:.18s}
+details[open] .noi li:nth-child(4){animation-delay:.24s}
+details[open] .noi li:nth-child(n+5){animation-delay:.3s}
+@media(prefers-reduced-motion:reduce){details[open] .noi li{animation:none}}

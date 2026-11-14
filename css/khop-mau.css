@@ -349,11 +349,9 @@
 @media(max-width:760px){.a.p01,.a.p11,.a.p21{--bien:10px}.a.p02,.a.p12,.a.p22{--bien:8px}.a.p03,.a.p13,.a.p23{--bien:11px}}
 @media(prefers-reduced-motion:reduce){.buoc-cuon .a.bat{animation:none}}
 
-/* ---------- mỗi khối của trang chủ cao tối thiểu một màn hình, nội dung căn giữa ---------- */
-.khoi,.look2,.cau2,.cl2,.ig,section.bb:has(>.the-toi){min-height:100svh;display:flex;flex-direction:column;justify-content:center}
-.khoi>.bb,.look2>.bb{width:100%}
+/* ---------- chỉ khối ngắn, đứng một mình mới cao trọn một màn hình (nội dung căn giữa):
+   danh mục chữ lớn · thẻ con số · khối câu nói. Các khối khác cao theo nội dung. ---------- */
+.khoi.dm-khoi,.cau2,section.bb:has(>.the-toi){min-height:100svh;display:flex;flex-direction:column;justify-content:center}
+.khoi.dm-khoi>.bb{width:100%}
+.khoi.dm-khoi{padding-top:clamp(64px,9vw,130px)!important}
 section.bb:has(>.the-toi){padding-top:clamp(40px,6vw,90px)}
-.khoi.dm-khoi,.khoi[style*="padding-top:0"]{padding-top:clamp(64px,9vw,130px)!important}
-.ig{justify-content:flex-end;padding-bottom:0}
-.ig .ig-dau{margin-top:auto}
-.ig .ig-luoi{margin-top:auto}

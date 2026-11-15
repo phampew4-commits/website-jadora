@@ -100,7 +100,7 @@
       return { g: gr, xo: xo === 'treo' ? 'treo' : 'xuyen', rong: xo === 'treo' ? 1.6 : 7, cao: 10, dung: true, kt: { x: 10, y: 10, z: .1 } };
     }
     /* thu nhỏ charm trên vòng cho cân với hạt (khách thấy charm to quá): xuyên/ống ×0,8 · treo ×0,72 · chặn đã theo cỡ hạt nên giữ nguyên */
-    var CO_XUYEN = .8, CO_TREO = .72;
+    var CO_XUYEN = 1, CO_TREO = 1;
     function heSoCo(g, m) { return /chặn/i.test(g.c.ten || '') ? 1 : m.xo === 'treo' ? CO_TREO : CO_XUYEN; }
     function taoCharm(g) {
       var m = taoMoHinh(g), giu = new THREE.Group(); giu.add(m.g);
@@ -291,12 +291,12 @@
       var kq = xep(dt);
       if (deo) {
         /* nhìn chéo từ phía khuỷu tay về bàn tay (như tự ngắm cổ tay mình): vòng hiện thành hình bầu dục, bàn tay ở phía sau */
-        var xc = kq.xw - .35 - kq.rH - (tt.L - 1) * kq.buoc / 2, kc = 10 + kq.BKmax * 3.1, az = -.62, el = .42 + ngThem;
+        var xc = kq.xw - .35 - kq.rH - (tt.L - 1) * kq.buoc / 2, kc = (10 + kq.BKmax * 3.1) * (V.xaDeo || 1), az = (V.azDeo == null ? -.2 : V.azDeo), el = (V.elDeo == null ? .5 : V.elDeo) + ngThem;
         nhinT.set(xc + .5, -.25, 0); cT.set(nhinT.x + kc * Math.sin(az) * Math.cos(el), nhinT.y + kc * Math.sin(el), kc * Math.cos(az) * Math.cos(el));
       } else {
         quay.rotation.y = xoay; nghieng.rotation.x = .9 + ngThem;
         // máy ảnh đứng yên theo cỡ tay lớn (~19 cm) → đổi cỡ tay thấy vòng to / nhỏ thật; vòng to hơn thế mới lùi ra
-        var bk = BKm[tt.vongDang] || 3; nhinT.set(0, -.55, 0); cT.set(0, 0, 7 + Math.max(bk, 3.1) * 3.3);
+        var bk = BKm[tt.vongDang] || 3; nhinT.set(0, -.55, 0); cT.set(0, 0, (7 + Math.max(bk, 3.1) * 3.3) * (V.xa || 1));
       }
       var mc = Math.min(1, dt * 5); cam.position.lerp(cT, camDat ? mc : 1); nhin.lerp(nhinT, camDat ? mc : 1); cam.lookAt(nhin); camDat = true;
       nghieng.updateMatrixWorld(true); deoG.updateMatrixWorld(true);
@@ -317,7 +317,7 @@
       if (!dangChay && tt) for (var i = 0; i < 80; i++) buoc(.05);
       var v = vongChon.visible; vongChon.visible = false; R.render(canh, cam); vongChon.visible = v; return cv; }
 
-    var V = window.V3D = { ve: ve, viTri: viTri, anh: anh, bien: function (id) { return (X.bien || {})[id] || null; }, khi: {} };
+    var V = window.V3D = { THREE: THREE, canh: canh, cam: cam, R: R, nghieng: nghieng, cv: cv, chay: chay, ve: ve, viTri: viTri, anh: anh, bien: function (id) { return (X.bien || {})[id] || null; }, khi: {} };
     document.querySelector('.tk-san').classList.add('co-3d');
     dispatchEvent(new Event('vong3d'));
   }

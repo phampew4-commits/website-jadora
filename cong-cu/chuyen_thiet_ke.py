@@ -54,5 +54,18 @@ open(p, 'w', encoding='utf-8').write(dau + s + '\n})();\n')
 
 # vong-3d.js dùng biến GIAM toàn cục của web Ngọc Trầm
 v = open('../website-ngoc-tram/js/vong-3d.js', encoding='utf-8').read()
+# Jadora: cho cảnh ngoài (js/xuong-canh.js — bàn làm việc 3D ở trang chủ) gắn vào cùng một cảnh với chuỗi:
+#  - V3D.xa: hệ số lùi máy ảnh ở chế độ thiết kế (mặc định 1 = như trang Tự thiết kế)
+#  - V3D.THREE / canh / cam / R / nghieng / cv / chay: các phần của cảnh để thêm vật và bắt bấm chuột
+for a, b in (("kc = 10 + kq.BKmax * 3.1,", "kc = (10 + kq.BKmax * 3.1) * (V.xaDeo || 1),"),   # V3D.xaDeo: lùi máy ảnh ở chế độ đeo thử
+             # đeo thử: bản gốc nhìn chéo từ khuỷu tay (az -.62) khó thấy chuỗi → Jadora nhìn gần chính diện vào cổ tay, hơi từ trên xuống
+             ("az = -.62, el = .42 + ngThem;", "az = (V.azDeo == null ? -.2 : V.azDeo), el = (V.elDeo == null ? .5 : V.elDeo) + ngThem;"),
+             # Cỡ charm: mô hình đã được chuẩn hoá về mm thật (bảng số đo KT, cỡ ghi trong tên, hoặc ước theo ảnh).
+             # Bản Ngọc Trầm thu nhỏ thêm cho "cân mắt" (xuyên ×0,8 · treo ×0,72); Jadora giữ ĐÚNG CỠ THẬT so với hạt.
+             ("var CO_XUYEN = .8, CO_TREO = .72;", "var CO_XUYEN = 1, CO_TREO = 1;"),
+             ("cT.set(0, 0, 7 + Math.max(bk, 3.1) * 3.3);", "cT.set(0, 0, (7 + Math.max(bk, 3.1) * 3.3) * (V.xa || 1));"),
+             ("var V = window.V3D = { ve: ve, viTri: viTri, anh: anh,", "var V = window.V3D = { THREE: THREE, canh: canh, cam: cam, R: R, nghieng: nghieng, cv: cv, chay: chay, ve: ve, viTri: viTri, anh: anh,")):
+    if a not in v: print('LECH vong-3d', a[:50])
+    v = v.replace(a, b)
 open('js/tk/vong-3d.js', 'w', encoding='utf-8').write(v)
 print('xong', len(s))

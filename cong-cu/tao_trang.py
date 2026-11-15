@@ -110,41 +110,40 @@ trang('hoi-dap.html', 'Hỏi đáp',
 
 # ---------------------------------------------------------------- ĐO CỠ TAY & CỠ NHẪN
 THUOC = ''.join('<line x1="%d" y1="0" x2="%d" y2="%d"/>' % (x, x, 12 if i % 5 == 0 else 7) for i, x in enumerate(range(0, 241, 8)))
-SVG_CO_TAY = '''<svg viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-<path d="M20 78c50 6 96 10 130 12 14-16 40-26 62-24 12 1 14 12 2 15l-24 8c30-2 70-4 96-4 12 0 12 14 0 15-14 1-30 2-44 3 12 1 26 2 36 3 11 1 10 14-1 14l-40-1c8 1 18 3 26 4 10 2 8 14-2 13l-34-3c6 2 12 3 18 5 9 3 5 13-4 12-22-4-52-10-70-12-34 4-90 8-150 12"/>
-<g class="dc-day"><path d="M120 84c-6 18-6 44 0 62" stroke-width="7" opacity=".9"/><path d="M134 85c-6 18-6 43 0 60" stroke-width="1" stroke-dasharray="2 4"/></g>
-<path d="M127 70V50m0 0-5 7m5-7 5 7" stroke-width="1.2"/></svg>'''
-SVG_NGANG = '''<svg viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-<path d="M112 196v-58c-10-8-22-22-30-36-6-10 6-18 14-10l16 16V44c0-13 18-13 18 0v40-58c0-13 18-13 18 0v58-50c0-13 18-13 18 0v52-36c0-13 18-13 18 0v84c0 22-8 36-14 44v18"/>
-<g class="dc-day"><path d="M108 112h100" stroke-width="2.4"/><path d="M108 104v16M208 104v16" stroke-width="2.4"/></g>
-<text x="158" y="140" text-anchor="middle" stroke="none" fill="currentColor" font-size="13">chiều ngang</text></svg>'''
-SVG_CHU_VI = '''<svg viewBox="0 0 320 200" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-<path d="M8 150c40-10 70-24 96-34 24-22 60-34 96-30l92 10c14 2 14 18 0 19l-70 4 78 8c13 2 12 18-1 18l-80-2 60 12c12 3 9 18-3 17l-76-9c-40 6-100 16-192 22"/>
-<path d="M150 92c20 4 34 14 30 26" />
-<g class="dc-day"><ellipse cx="150" cy="128" rx="16" ry="40" stroke-width="6" opacity=".9"/></g>
-<text x="150" y="190" text-anchor="middle" stroke="none" fill="currentColor" font-size="13">chu vi (chụm các ngón lại)</text></svg>'''
+# Hình minh hoạ: bàn tay vẽ nét mảnh (một đường viền liền), thước / giấy đo màu cam nổi lên trên.
+MO = '<svg viewBox="0 0 240 260" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g transform="translate(20 0)">'
+DONG = '</g></svg>'
+CHU = '<text x="%d" y="%d" text-anchor="%s" stroke="none" fill="currentColor" font-size="12">%s</text>'
+NGON = 'L64 52C64 37 86 37 86 52L87 108L88 36C88 21 110 21 110 36L111 108L113 47C113 32 135 33 134 48L134 114L137 77C138 63 158 65 156 79L153 142C152 168 146 186 137 201C132 212 130 232 130 258'
+TAY = '<path class="dc-tay" d="M74 258C74 226 72 204 66 188C58 172 44 160 32 142C24 130 17 117 20 106C23 96 35 96 41 107C47 119 55 129 64 134' + NGON + '"/>'
+TAY_CHUM = ('<path class="dc-tay" d="M74 258C74 226 72 204 67 188C62 172 62 152 64 134' + NGON + '"/>'    # ngón cái gập vào lòng bàn tay
+            '<path class="dc-nep dam" d="M70 196C74 176 88 158 112 146C122 142 128 152 120 160C106 172 96 184 90 200"/>')
+NEP = '<path class="dc-nep" d="M70 150C86 138 112 136 150 146M72 176C92 160 118 158 146 168"/>'
+SVG_CO_TAY = (MO + TAY + NEP + '<g class="dc-day"><path d="M62 222C72 215 132 215 142 222" stroke-width="2" stroke-dasharray="3 4"/><path d="M62 224C76 234 128 234 142 224" stroke-width="10"/></g>'
+              '<path d="M150 226h12"/>' + CHU % (166, 230, 'start', 'cổ tay') + DONG)
+SVG_NGANG = (MO + TAY + NEP + '<g class="dc-day"><path d="M64 126h92" stroke-width="2.6"/><path d="M64 116v20M156 116v20" stroke-width="2.6"/></g>'
+             '<path d="M162 126h10"/>' + CHU % (176, 130, 'start', 'ngang') + DONG)
+SVG_CHU_VI = (MO + TAY_CHUM + '<g class="dc-day"><path d="M56 150C66 139 150 139 162 150" stroke-width="2" stroke-dasharray="3 4"/><path d="M56 152C70 163 148 163 162 152" stroke-width="10"/></g>'
+              '<path d="M168 154h8"/>' + CHU % (180, 158, 'start', 'chu vi') + DONG)
 SVG_NHAN = '''<svg viewBox="0 0 320 170" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 <g transform="translate(40 96)"><rect x="-6" y="0" width="252" height="44" rx="4" class="dc-nen"/>''' + THUOC + '''
 <g stroke="none" fill="currentColor" font-size="11" text-anchor="middle"><text x="0" y="30">0</text><text x="40" y="30">1</text><text x="80" y="30">2</text><text x="120" y="30">3</text><text x="160" y="30">4</text><text x="200" y="30">5</text><text x="240" y="30">6</text></g></g>
 <g class="dc-day"><circle cx="70" cy="66" r="30" stroke-width="5"/><path d="M62 30l8-12 8 12" stroke-width="2"/></g>
 <path d="M40 22h60m-60 0 6-5m-6 5 6 5m54-5-6-5m6 5-6 5" stroke-width="1.2"/><path d="M40 28v60M100 28v60" stroke-width="1" stroke-dasharray="2 4"/>
 <text x="118" y="27" stroke="none" fill="currentColor" font-size="13">đường kính trong</text></svg>'''
-SVG_GIAY = '''<svg viewBox="0 0 320 170" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-<path d="M120 168V70c0-14 20-14 20 0v40-84c0-14 20-14 20 0v84-70c0-14 20-14 20 0v72-48c0-14 20-14 20 0v104"/>
-<g class="dc-day"><path d="M157 78h26" stroke-width="12" opacity=".9"/><path d="M183 78l34-10" stroke-width="12" opacity=".55"/></g>
-<path d="M186 62v32" stroke-width="2.4"/>
-<text x="232" y="60" stroke="none" fill="currentColor" font-size="13">đánh dấu</text></svg>'''
+SVG_GIAY = (MO + TAY + NEP + '<g class="dc-day"><path d="M111 70l40-14" stroke-width="9" opacity=".55"/><path d="M86 70h26" stroke-width="9"/></g>'
+            '<path d="M113 60v20" stroke-width="2.4"/><path d="M113 54V40h16"/>' + CHU % (133, 44, 'start', 'đánh dấu') + DONG)
 
 def bang(cot, hang):
     return '<div class="dc-bang"><table><thead><tr>' + ''.join('<th>%s</th>' % c for c in cot) + '</tr></thead><tbody>' + \
         ''.join('<tr>' + ''.join('<td>%s</td>' % o for o in h) + '</tr>' for h in hang) + '</tbody></table></div>'
 
 trang('do-co-tay.html', 'Đo cỡ tay & cỡ nhẫn',
-  dau('Hướng dẫn', 'Đo cỡ tay <em>&amp; cỡ nhẫn</em>', 'Chỉ cần một sợi thước dây, hoặc một mẩu giấy và cây thước kẻ. Chọn đúng món bạn định mua:') +
+  dau('Hướng dẫn', 'Đo cỡ tay &amp; <em>cỡ nhẫn</em>', 'Chỉ cần một sợi thước dây, hoặc một mẩu giấy và cây thước kẻ. Chọn đúng món bạn định mua:') +
   '<div class="bb"><nav class="dc-chon" id="dc-chon"><button type="button" class="chon" data-o="chuoi"><b>Chuỗi hạt</b><small>đo cổ tay</small></button><button type="button" data-o="vong"><b>Vòng tay liền</b><small>đo lòng bàn tay</small></button><button type="button" data-o="nhan"><b>Nhẫn</b><small>đo ngón tay</small></button></nav></div>' +
   '<div class="bb dc" id="dc">' + '''
 <section class="dc-o chon" data-o="chuoi">
-  <div class="dc-hai"><figure class="dc-hinh">''' + SVG_CO_TAY + '''<figcaption>Quấn thước sát cổ tay, ngay trên mắt cá tay</figcaption></figure>
+  <div class="dc-hai"><figure class="dc-hinh">''' + SVG_CO_TAY + '''<figcaption>Quấn thước dây quanh cổ tay</figcaption></figure>
   <div><h2>Chuỗi hạt: <em>đo cổ tay</em></h2>
     <ol class="tr-buoc">
       <li><div><b>Quấn thước dây quanh cổ tay</b>Đặt ở chỗ bạn hay đeo, quấn sát da nhưng đừng siết.</div></li>
@@ -160,7 +159,7 @@ trang('do-co-tay.html', 'Đo cỡ tay & cỡ nhẫn',
 
 <section class="dc-o" data-o="vong">
   <div class="dc-hai"><div class="dc-doi"><figure class="dc-hinh">''' + SVG_NGANG + '''<figcaption>Cách 1 · đo chiều ngang lòng bàn tay</figcaption></figure>
-    <figure class="dc-hinh">''' + SVG_CHU_VI + '''<figcaption>Cách 2 · đo chu vi lòng bàn tay</figcaption></figure></div>
+    <figure class="dc-hinh">''' + SVG_CHU_VI + '''<figcaption>Cách 2 · chụm các ngón, đo chu vi bàn tay</figcaption></figure></div>
   <div><h2>Vòng tay liền: <em>đo lòng bàn tay</em></h2>
     <p>Vòng liền phải lọt qua bàn tay, nên đo bàn tay chứ không đo cổ tay. Chọn một trong hai cách:</p>
     <ul><li><b>Chiều ngang:</b> xoè tay, đo ngang lòng bàn tay ở chỗ rộng nhất, không tính ngón cái.</li>
@@ -312,7 +311,7 @@ TRANG['tu-thiet-ke.html'] = ('Tự thiết kế chuỗi', '''<div class="xuong" 
     <section class="xg-o chon" data-b="1"><h2>Chọn <em>dây ngọc</em></h2><p class="xg-ghi">Dây nền quyết định màu và cỡ hạt của cả chuỗi.</p>
       <div class="ds-day" id="dsDay"></div></section>
 
-    <section class="xg-o" data-b="2"><h2>Số vòng <em>&amp; cỡ tay</em></h2><p class="xg-ghi">Quấn nhiều vòng thì mỗi vòng thiết kế riêng ở thanh phía trên hình.</p>
+    <section class="xg-o" data-b="2"><h2>Số vòng &amp; <em>cỡ tay</em></h2><p class="xg-ghi">Quấn nhiều vòng thì mỗi vòng thiết kế riêng ở thanh phía trên hình.</p>
       <div class="so-vong" id="soVong"></div>
       <div class="xg-tay"><span>Cỡ cổ tay</span><b class="gt" id="gtTay">15 cm</b></div>
       <input type="range" id="coTay" min="12" max="20" step="0.5" value="15" aria-label="Cỡ cổ tay (cm)">
@@ -333,17 +332,45 @@ TRANG['tu-thiet-ke.html'] = ('Tự thiết kế chuỗi', '''<div class="xuong" 
 
     <div class="xg-di"><button type="button" class="lui" id="xgLui" hidden>← Quay lại</button><button type="button" class="toi2" id="xgToi">Tiếp tục →</button></div>
   </div>
-</div>''', '''
+</div>
+
+<section class="xg-them xg-cach">
+  <div class="bb">
+    <div class="xg-tieu len"><p class="nhan">Sau khi bạn bấm gửi</p><h2>Từ bản thiết kế <em>đến cổ tay bạn</em></h2></div>
+    <ol class="xg-4">
+      <li class="len"><i>01</i><b>Bạn gửi thiết kế</b><p>Qua Zalo hoặc Messenger, kèm ảnh chuỗi và danh sách charm web tạo sẵn.</p></li>
+      <li class="len"><i>02</i><b>Jadora báo giá chính xác</b><p>Tổng trên web chỉ là ước tính. Cửa hàng kiểm tra hàng còn, tính công xâu rồi báo lại.</p></li>
+      <li class="len"><i>03</i><b>Xâu đúng như bạn xếp</b><p>Từng charm nằm đúng vị trí hạt bạn đã chọn trên từng vòng.</p></li>
+      <li class="len"><i>04</i><b>Quay video rồi mới gửi</b><p>Bạn xem lại chuỗi thật trước khi cửa hàng đóng hộp giao đi.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="xg-them xg-hoi">
+  <div class="bb xg-hoi-luoi">
+    <div class="xg-tieu len"><p class="nhan">Nên biết trước</p><h2>Vài điều <em>hay được hỏi</em></h2>
+      <p>Chưa thấy câu của bạn? Nhắn cho Jadora, có người thật trả lời.</p>
+      <div class="tr-nut"><a class="nut toi" data-zalo href="lien-he.html">Nhắn Zalo</a><a class="nut vien" href="bo-suu-tap.html?loai=chuoi">Xem chuỗi phối sẵn</a></div></div>
+    <div class="xep len">
+      <details open><summary>Giá trên web có phải giá cuối không?</summary><div class="noi"><p>Chưa. Tổng chỉ là giá xấp xỉ để bạn tham khảo. Giá chính xác cửa hàng báo lại sau khi xem thiết kế, kiểm tra hàng còn và tiền công xâu.</p></div></details>
+      <details><summary>Tôi nên nhập cỡ tay thế nào?</summary><div class="noi"><p>Nhập đúng số đo sát cổ tay. Khi xâu, cửa hàng tự cộng thêm độ rộng để chuỗi đeo vừa. <a href="do-co-tay.html">Xem cách đo cỡ tay →</a></p></div></details>
+      <details><summary>Thiết kế có được lưu lại không?</summary><div class="noi"><p>Có. Thiết kế tự lưu trên máy bạn và nằm ngay trong đường link của trang. Bấm “Chép link” ở cột nút bên phải hình để gửi cho bạn bè hoặc mở lại trên máy khác.</p></div></details>
+      <details><summary>Chuỗi quấn nhiều vòng thì thiết kế ra sao?</summary><div class="noi"><p>Chọn số vòng ở bước 02. Mỗi vòng có một thẻ riêng phía trên hình để bạn gắn charm cho từng vòng; “Đeo thử trên tay” cho xem cả chuỗi quấn trên cổ tay.</p></div></details>
+      <details><summary>Charm vàng có gì cần lưu ý?</summary><div class="noi"><p id="xg-luuy">Charm vàng là charm trang sức, không phải vàng tích sản. Khi bán lại sẽ mất giá nhiều so với giá mua, bạn cân nhắc trước khi chọn nhé.</p></div></details>
+    </div>
+  </div>
+</section>''', '''
 var GIAM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 khoiDong(function(){
+  var L0=CH.lienHe||{}; $$('[data-zalo]').forEach(function(x){x.href='https://zalo.me/'+(L0.zalo||L0.sdt); x.target='_blank'; x.rel='noopener'});
+  var ly=((CH.chinhSach||{}).luuY||[])[0]; if(ly) $('#xg-luuy').textContent=ly;
   /* bốn bước: mỗi lúc hiện một bước */
   var b=1;
   function mo(n){ b=Math.min(4,Math.max(1,n));
     $$('#xgBuoc button').forEach(function(x){x.classList.toggle('chon',+x.dataset.b===b); x.classList.toggle('roi',+x.dataset.b<b)});
     $$('.xg-o').forEach(function(x){x.classList.toggle('chon',+x.dataset.b===b)});
     $('#xgLui').hidden=b===1; $('#xgToi').hidden=b===4;
-    var o=$('.xg-bang'), tren=o.getBoundingClientRect().top+scrollY-(innerWidth>900?parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cao-dau'))||85:0);
-    if(innerWidth>900&&scrollY>tren+140) scrollTo({top:tren,behavior:'smooth'}) }
+    $('.xg-bang').scrollTop=0 }
   $('#xgBuoc').onclick=function(ev){var x=ev.target.closest('button'); if(x) mo(+x.dataset.b)};
   $('#xgLui').onclick=function(){mo(b-1)}; $('#xgToi').onclick=function(){mo(b+1)};
   addEventListener('tk-ve',function(ev){ var d=ev.detail;
@@ -352,9 +379,19 @@ khoiDong(function(){
     $('#xg4').textContent=d.day? d.tong : '' });
   /* nạp bộ máy theo thứ tự (cần cấu hình đã tải xong) */
   var v=(document.querySelector('script[src*="js/chung.js"]').src.split('?v=')[1]||'1');
-  (function nap(ds){ if(!ds.length) return; var s=document.createElement('script'); s.src='js/tk/'+ds[0]+'?v='+v; s.onload=function(){nap(ds.slice(1))}; document.body.appendChild(s) })
-    (['charm-v3.js','charm-ve.js','thiet-ke.js','charm-3d.min.js','vong-3d.js']);
-});''', '<link rel="stylesheet" href="css/xuong.css?v=1">\n<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" crossorigin="anonymous">\n')
+  /* khi bộ máy 3D sẵn sàng: dựng cảnh bàn làm việc quanh chuỗi (sau khi thiet-ke.js đã gắn xong các hàm của nó) */
+  addEventListener('vong3d',function(){ setTimeout(function(){ var V=window.V3D; if(!V||!window.XUONG_CANH) return;
+    try{ V.xa=2.05; $('.tk-san').classList.add('canh-3d');
+      /* chuỗi nằm giữa phần bàn còn trống bên trái tấm thẻ chọn (màn hẹp thì thẻ nằm dưới, chuỗi ở giữa) */
+      var dat=function(){ var w=V.cv.clientWidth,h=V.cv.clientHeight; if(!w||!h) return; var the=$('.xg-bang').getBoundingClientRect(), cv=V.cv.getBoundingClientRect(), trong=innerWidth>900? the.left-cv.left : w;
+        V.cam.setViewOffset(w,h,w/2-trong/2,-h*.07,w,h); V.chay() };
+      addEventListener('resize',dat);
+      new ResizeObserver(dat).observe(V.cv); dat();
+      XUONG_CANH(V,{gia:false,maus:[],chon:function(){}});
+    }catch(er){ console.warn('xuong-canh',er); V.xa=1; V.cam.clearViewOffset(); $('.tk-san').classList.remove('canh-3d') } },0) });
+  (function nap(ds){ if(!ds.length) return; var s=document.createElement('script'); s.src='js/'+ds[0]+'?v='+v; s.onload=function(){nap(ds.slice(1))}; document.body.appendChild(s) })
+    (['tk/charm-v3.js','tk/charm-ve.js','tk/thiet-ke.js','tk/charm-3d.min.js','xuong-canh.js','tk/vong-3d.js']);
+});''', '<link rel="stylesheet" href="css/trang.css?v=1">\n<link rel="stylesheet" href="css/xuong.css?v=1">\n<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" crossorigin="anonymous">\n')
 
 for file, (ten, than, js_, css) in TRANG.items():
     s = KHUNG.replace('@TEN@', ten).replace('@CSS@', css).replace('@THAN@', than).replace('@JS@', js_.strip())

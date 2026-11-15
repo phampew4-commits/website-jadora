@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quà tặng · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=261115154349">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261115154349">
+<link rel="stylesheet" href="css/dau.css?v=261115154349">
+<link rel="stylesheet" href="css/trang.css?v=261115154349">
+</head>
+<body>
+<div id="dau"></div>
+
+<main>
+<div class="bb tr-dau"><p class="nhan">Quà tặng</p><h1>Chọn quà <em>theo ngân sách</em></h1><p class="tr-mo">Chọn một mức giá, Jadora lọc ra các món đang có.</p></div><div class="bb" style="padding-bottom:clamp(70px,9vw,120px)"><div class="qt-muc" id="qt-muc"></div><div class="luoi sat" id="qt-luoi"></div><p class="tr-nut" style="justify-content:center;margin-top:34px"><button class="nut vien" id="qt-them" type="button">Xem thêm</button></p></div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js?v=261115154349"></script>
+<script src="js/hieu-ung.js?v=261115154349"></script>
+<script src="js/dau.js?v=261115154349"></script>
+<script src="js/khach.js?v=261115154349"></script>
+<script>
+khoiDong(function(){var L=CH.lienHe||{}; $$('[data-zalo]').forEach(function(a){a.href='https://zalo.me/'+(L.zalo||L.sdt); a.target='_blank'; a.rel='noopener'}); 
+  var MUC=[['Dưới 500k',0,5e5],['500k – 1 triệu',5e5,1e6],['1 – 3 triệu',1e6,3e6],['Trên 3 triệu',3e6,1e12]], im=1, hien=0;
+  function loc(i){return DS.filter(function(x){return x.gia>=MUC[i][1]&&x.gia<MUC[i][2]}).sort(function(a,b){return a.gia-b.gia})}
+  $('#qt-muc').innerHTML=MUC.map(function(m,i){return '<button type="button" data-i="'+i+'"><b>'+m[0]+'</b><span>'+loc(i).length+' món</span></button>'}).join('');
+  function ve(lai){ var ds=loc(im); if(lai){hien=0; $('#qt-luoi').innerHTML=''}
+    $('#qt-luoi').insertAdjacentHTML('beforeend',ds.slice(hien,hien+12).map(theSp).join('')); hien+=12;
+    $('#qt-them').style.display=hien<ds.length?'':'none';
+    $$('#qt-muc button').forEach(function(b){b.classList.toggle('chon',+b.dataset.i===im)}) }
+  $('#qt-muc').onclick=function(ev){var b=ev.target.closest('button'); if(b){im=+b.dataset.i; ve(true)}};
+  $('#qt-them').onclick=function(){ve(false)}; ve(true);});
+</script>
+</body>
+</html>

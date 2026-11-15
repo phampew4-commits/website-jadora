@@ -1,0 +1,693 @@
+/* JADORA — bộ máy "Tự thiết kế chuỗi", chuyển từ web Ngọc Trầm (cong-cu/chuyen_thiet_ke.py sinh ra — đừng sửa tay).
+   Chạy sau khi khoiDong() đã tải cấu hình. Gói trong một hàm để không đụng tên với mã của Jadora. */
+(function () {
+var L0 = CH.lienHe || {};
+var GIAM = window.GIAM;
+var CHINH_SACH = {luuY: [(CH.thietKe || {}).luuY || 'Charm vàng là charm trang sức, không phải vàng tích sản. Khi bán lại sẽ mất giá nhiều so với giá mua, bạn cân nhắc trước khi chọn nhé.']};
+function taiJson(u) { return fetch(u, {cache: 'no-cache'}).then(function (r) { return r.json(); }); }
+function baoTin(c) { bao(c); }
+function tkHinh(id, alt, w) { return '<img src="' + anh(id, w) + '" alt="' + e(alt || '') + '" loading="lazy" decoding="async" referrerpolicy="no-referrer">'; }
+function linkZalo() { return 'https://zalo.me/' + String(L0.zalo || L0.sdt || '').replace(/\D/g, ''); }
+function linkFb() { return !L0.messenger ? linkZalo() : (matchMedia('(pointer: coarse)').matches ? 'https://m.me/' : 'https://www.facebook.com/') + L0.messenger; }
+/* =========================================================
+   TỰ THIẾT KẾ CHUỖI
+   - Chọn dây ngọc, số vòng quấn (1–5), cỡ tay.
+   - Thiết kế TỪNG VÒNG riêng (tab Vòng 1, Vòng 2…), charm gắn ở hạt thứ j của vòng k.
+   - "Đeo thử": vẽ cả chuỗi quấn trên cổ tay, kéo ngang để xoay.
+   - Chỉ TỔNG giá là ước tính (≈, làm tròn); giá dây và giá charm giữ nguyên.
+   Lưu vào link (#d=…&t=…&v=…&c=id@k.j,…) và máy khách (localStorage).
+   ========================================================= */
+var TK = {day: [], charm: []}, chon = {day: null, tay: 15, vong: 1, gan: []};   // gan: [{c, k: vòng, j: hạt}]
+var dangChon = null, vongDang = 0, cheDo = 'sua';   // dangChon = charm đang chọn (object trong chon.gan)
+var nhomLoc = 'tat', tuCharm = '', xepC = 're', soCharmHien = 0, MOI = 24, TOI_DA = +((CH.thietKe || {}).toiDaCharm) || 12;
+var CX = 200, CY = 200, R = 150, VONG_GIA = +((CH.thietKe || {}).vongGia) || 3;   // giá dây trong app là giá dây quấn 3 vòng
+
+taiJson('data/thiet-ke.json').then(function (d) {
+  TK = d; docLai(); dungDay(); dungVong(); dungChip(); hienCharm(true); ve(true);
+});
+
+/* ---------- tính toán ---------- */
+function soHat() {           // hạt MỖI vòng: chu vi = cỡ tay + 1,5 cm độ rộng; mỗi hạt = cỡ hạt (ly ≈ mm)
+  var co = chon.day ? chon.day.co : 6;
+  return Math.max(16, Math.round((chon.tay + 1.5) * 10 / co));
+}
+function tongHat() { return soHat() * chon.vong; }
+function giaDay(d, v) { d = d || chon.day; return !d ? 0 : d.gia1 ? d.gia1 * (v || chon.vong) : Math.round(d.gia * (v || chon.vong) / VONG_GIA / 1000) * 1000; }   // dây trơn: giá 1 vòng × số vòng
+function tong() { return giaDay() + chon.gan.reduce(function (s, g) { return s + g.c.gia; }, 0); }
+function uoc(n) { var lh = chon.gan.some(function (g) { return !g.c.gia; }); return (n ? '≈ ' + gia(Math.round(n / 10000) * 10000) : '') + (lh ? (n ? ' + ' : '') + 'charm liên hệ giá' : ''); }   // TỔNG ước tính; charm chưa có giá lẻ → "liên hệ", không bao giờ dùng giá sỉ
+function cuaVong(k) { return chon.gan.filter(function (g) { return g.k === k; }); }
+function oDo(k, j) { return chon.gan.filter(function (g) { return g.k === k && g.j === j; })[0]; }
+function rHat() { return R * Math.sin(Math.PI / soHat()) * 1.02; }
+function gocHat(j) { return BO && BO.k === vongDang && BO.goc[j] !== undefined ? BO.goc[j] : -Math.PI / 2 + j * 2 * Math.PI / soHat(); }
+function xyHat(j) { var a = gocHat(j); return [CX + R * Math.cos(a), CY + R * Math.sin(a)]; }
+function viTriTrong(k) {   // chỗ trống của vòng k, ưu tiên phía trước (đáy vòng), xen kẽ trái – phải
+  var n = soHat(), goc = Math.round(n / 2);
+  for (var t = 0; t < n; t++) { var j = (goc + (t % 2 ? -1 : 1) * Math.ceil(t / 2) * 2 + n * 4) % n; if (!oDo(k, j)) return j; }
+  for (j = 0; j < n; j++) if (!oDo(k, j)) return j;
+  return -1;
+}
+function tenVt(g) { return (chon.vong > 1 ? 'vòng ' + (g.k + 1) + ', ' : '') + 'hạt ' + (g.j + 1) + '/' + soHat(); }
+function chuanHoa() {      // khi đổi cỡ tay / số vòng: kéo charm về trong phạm vi, tránh trùng chỗ
+  var n = soHat(), bo = 0;
+  chon.gan = chon.gan.filter(function (g) { if (g.k >= chon.vong) { bo++; return false; } return true; });
+  var dung = {};
+  chon.gan.forEach(function (g) {
+    g.j = Math.min(g.j, n - 1);
+    while (dung[g.k + '.' + g.j]) g.j = (g.j + 1) % n;
+    dung[g.k + '.' + g.j] = 1;
+  });
+  if (vongDang >= chon.vong) vongDang = chon.vong - 1;
+  return bo;
+}
+function pha(hex, t) {   // làm tối màu một chút để hạt không đều màu
+  var n = parseInt(hex.slice(1), 16), r = n >> 16, g = n >> 8 & 255, b = n & 255;
+  return 'rgb(' + Math.round(r * (1 - t)) + ',' + Math.round(g * (1 - t)) + ',' + Math.round(b * (1 - t)) + ')';
+}
+function defsChung(rc) {
+  var mau = chon.day ? chon.day.mau : ['#e4dfd0', '#a49f8c'], h = '';
+  [0, 1, 2].forEach(function (k) {   // 3 sắc độ ngọc khác nhau cho tự nhiên
+    h += '<radialGradient id="ng' + k + '" cx="36%" cy="30%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/>' +
+      '<stop offset=".18" stop-color="' + pha(mau[0], k * .07) + '"/><stop offset=".75" stop-color="' + pha(mau[1], k * .05) + '"/>' +
+      '<stop offset="1" stop-color="' + pha(mau[1], .25) + '"/></radialGradient>';
+  });
+  h += '<radialGradient id="vangKim" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#fff3cf"/><stop offset=".45" stop-color="#d9b56a"/><stop offset="1" stop-color="#8a6420"/></radialGradient>';
+  h += '<clipPath id="tronCharm"><circle r="' + rc.toFixed(2) + '"/></clipPath>';
+  h += '<filter id="bong" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#1d3a46" flood-opacity=".28"/></filter>';
+  return h;
+}
+function svgHat(r, k) {
+  return '<circle r="' + r.toFixed(2) + '" fill="url(#ng' + k + ')" filter="url(#bong)"/>' +
+    '<ellipse cx="' + (-r * .32).toFixed(2) + '" cy="' + (-r * .38).toFixed(2) + '" rx="' + (r * .28).toFixed(2) + '" ry="' + (r * .16).toFixed(2) + '" fill="#fff" opacity=".55" transform="rotate(-30)"/>';
+}
+function svgCharm(g, rc, sel) {
+  return (sel ? '<circle r="' + (rc + 7) + '" class="vong-chon" fill="none" stroke="#F59178" stroke-width="1.2" stroke-dasharray="3 3"/>' : '') +
+    '<circle r="' + (rc + 2.6) + '" fill="url(#vangKim)" filter="url(#bong)"/>' +
+    '<image href="' + anh(g.c.anh, 200) + '" x="' + (-rc) + '" y="' + (-rc) + '" width="' + (2 * rc) + '" height="' + (2 * rc) + '" preserveAspectRatio="xMidYMid slice" clip-path="url(#tronCharm)"/>' +
+    '<circle r="' + rc + '" fill="none" stroke="#fff6dc" stroke-width=".8" opacity=".8"/>';
+}
+
+/* bản phác 2D (charm-ve.js) lồng vào vòng: S = cạnh khung, (x,y) = góc trên trái */
+function phac(c, x, y, S) {
+  if (!window.phacCharm) return '';
+  if (!c._phac) c._phac = phacCharm(c);
+  return c._phac.replace('<svg ', '<svg x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + S.toFixed(1) + '" height="' + S.toFixed(1) + '" ');
+}
+function laTreo(g) { return g && window.phacCharm && kieuXo(g.c) === 'treo'; }
+/* charm trên vòng thiết kế theo kiểu xỏ: xuyen/ong thay chỗ 1 hạt, trục ngang theo dây; treo móc giữa 2 hạt, thõng ra ngoài */
+/* ---------- bố cục vòng theo bề rộng thật trên dây ----------
+   Mỗi charm chiếm đúng phần dây bằng bề ngang của nó (charm treo chỉ chiếm cái khoen ~3 ly),
+   rồi cả vòng co lại cho vừa chu vi → không charm nào đè lên hạt. */
+var BO = null;   // {k: vòng, co: hệ số co, rh: bán kính hạt sau co, goc: {j: góc tâm ô}, ds: [mục]}
+var DOC = {'1941': 1, '18924': 1, '21660': 1, '24041': 1, '23990': 1, '25389': 1, '16291': 1};   // hạt dẹt/vòng mà bản v3 vẽ dải nằm ngang: dây xuyên qua lỗ giữa → dải phải vuông góc với dây, xoay 90°
+function laDoc(c) { return !!(DOC[c.id] || DOC[c.ma]) && !!(window.V3 && (window.V3[c.id] || window.V3[c.ma])); }
+function hopCharm(c) { var H = window.V3_HOP || {}; return H[c.id] || H[c.ma] || [12, 12, 188, 188]; }   // khung hình thật trong ảnh (khung 200)
+function dayCharm(c, b) {   // bề dày charm (vuông góc với dây), ly
+  var t = (c.ten || '').toLowerCase(), w = b[2] - b[0], h = b[3] - b[1], m = t.match(/(\d+(?:[.,]\d+)?)\s*(?:x\s*[\d.,]+\s*)?ly\b/);
+  if (/điếu/.test(t)) return 8;               // đĩa ngọc bình an ~11 ly, thanh khoen hai đầu kéo dài theo dây
+  if (w / h > 2.5) return 5;                   // ống dài, mảnh
+  if (m) return Math.min(14, Math.max(6, parseFloat(m[1].replace(',', '.'))));
+  return 8.5;
+}
+var CO_CHARM = .8;   // thu nhỏ charm xỏ trên dây (xuyên/ống) — không áp cho charm treo & điếu
+function doCharm(g, pmm) {   // {dai: phần dây chiếm, S: cạnh ảnh, b: khung hình} — đơn vị khung vẽ 400, trước khi co
+  if (kieuXo(g.c) !== 'treo' && !laDoc(g.c) && !/điếu/i.test(g.c.ten || '')) pmm *= CO_CHARM;   // charm treo & điếu đã thu nhỏ trước → giữ nguyên
+  var b = hopCharm(g.c), w = b[2] - b[0], h = b[3] - b[1];
+  if (kieuXo(g.c) === 'treo') return {dai: 2.6 * pmm, S: 9.5 * pmm * 200 / Math.max(h, w * .8), b: b};   // mặt treo ~9,5 ly kể cả khoen (charm bè ngang thì tính theo bề ngang)
+  if (/chặn/i.test(g.c.ten || '')) {   // chặn: nhỏ hơn hạt chuỗi ~2,5 ly (thường 2–3 ly), theo cỡ hạt đang chọn
+    var P = Math.max(3, (chon.day ? chon.day.co : 6) - 2.5) * pmm / (kieuXo(g.c) !== 'treo' && !laDoc(g.c) && !/điếu/i.test(g.c.ten || '') ? CO_CHARM : 1);
+    if (laDoc(g.c)) { var Sc = P * 200 / w; return {dai: Math.max(P * .4, h * Sc / 200) * 1.04, S: Sc, b: b, doc: true}; }
+    var Sn = P * 200 / h; return {dai: Math.max(P * .4, w * Sn / 200) * 1.04, S: Sn, b: b};
+  }
+  if (laDoc(g.c)) { var Td = 8 * pmm, Sd = Td * 200 / w; return {dai: Math.max(Td * .5, h * Sd / 200) * 1.02, S: Sd, b: b, doc: true}; }   // ảnh đứng: bề ngang ảnh vuông góc dây
+  var T = dayCharm(g.c, b) * pmm, S = T * 200 / h;
+  return {dai: Math.max(T * .7, w * S / 200) * 1.02, S: S, b: b};
+}
+function boCuc(k) {
+  var n = soHat(), r = rHat(), co0 = chon.day ? chon.day.co : 6, pmm = 2 * r / co0, ds = [], j, g;
+  for (j = 0; j < n; j++) {
+    g = oDo(k, j);
+    if (g && !laTreo(g)) { ds.push({j: j, g: g, m: doCharm(g, pmm)}); continue; }
+    ds.push({j: j, hat: true, dai: 2 * r});
+    if (g) ds.push({j: j, g: g, treo: true, m: doCharm(g, pmm)});
+  }
+  var tong = ds.reduce(function (s, x) { return s + (x.m ? x.m.dai : x.dai); }, 0), co = 2 * Math.PI * R / tong, goc = {};
+  var a = -Math.PI / 2 - (ds[0].m ? ds[0].m.dai : ds[0].dai) * co / 2 / R;   // ô 0 nằm chính giữa phía trên
+  ds.forEach(function (x) { var d = (x.m ? x.m.dai : x.dai) * co / R; x.a = a + d / 2; a += d; if (!x.treo) goc[x.j] = x.a; });
+  BO = {k: k, co: co, rh: r * Math.min(co, 1.15), goc: goc, ds: ds, pmm: pmm * co};
+  return BO;
+}
+function svgCharmVong(g, x, sel) {
+  if (!window.phacCharm) { var p0 = xyHat(g.j); return '<g transform="translate(' + p0[0].toFixed(1) + ' ' + p0[1].toFixed(1) + ')"><g class="noi-charm">' + svgCharm(g, BO.rh * 1.55, sel) + '</g></g>'; }
+  var S = x.m.S * BO.co, b = x.m.b, p = [CX + R * Math.cos(x.a), CY + R * Math.sin(x.a)], deg = x.a * 180 / Math.PI, ox, oy, xoay;
+  if (x.treo) {   // khoen (mép trên khung hình) nằm trên dây, thân thõng ra ngoài vòng
+    ox = -(b[0] + b[2]) / 400 * S; oy = -b[1] / 200 * S - 1.2 * BO.pmm; xoay = deg - 90;
+  } else {        // tâm khung hình nằm trên dây, trục ngang của ảnh theo chiều dây
+    ox = -(b[0] + b[2]) / 400 * S; oy = -(b[1] + b[3]) / 400 * S; xoay = deg + (x.m.doc ? 180 : 90);
+  }
+  var cx = ox + (b[0] + b[2]) / 400 * S, cy = oy + (b[1] + b[3]) / 400 * S, rv = Math.max(b[2] - b[0], b[3] - b[1]) / 400 * S + 4;
+  return '<g transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ') rotate(' + xoay.toFixed(1) + ')"><g class="noi-charm">' +
+    (sel ? '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + rv.toFixed(1) + '" class="vong-chon" fill="none" stroke="#F59178" stroke-width="1.2" stroke-dasharray="3 3"/>' : '') +
+    phac(g.c, ox, oy, S) + '</g></g>';
+}
+
+/* ---------- vẽ ---------- */
+function ve(lanDau) {
+  chuanHoa();
+  $('.tk-san').classList.toggle('deo', cheDo === 'deo');
+  if (window.V3D) ve3d(); else if (cheDo === 'deo') veTay(); else veVong(lanDau);
+  dungTabVong(); bong(); tomTat(); luu(); capMini();
+  dispatchEvent(new CustomEvent('tk-ve', {detail: {day: chon.day, vong: chon.vong, tay: chon.tay, charm: chon.gan.length, tong: uoc(tong())}}));
+}
+/* vòng 3D (vong-3d.js): thiet-ke.js giữ dữ liệu, V3D chỉ vẽ theo trạng thái */
+function ve3d() {
+  V3D.ve({cheDo: cheDo, vongDang: vongDang, L: chon.vong, n: soHat(), co: chon.day ? chon.day.co : 8,
+          mau: chon.day ? chon.day.mau : ['#e4dfd0', '#a49f8c'], gan: chon.gan, chon: cheDo === 'sua' ? dangChon : null});
+  chon.gan.forEach(function (g) { g.moi = false; });
+  nhanGiua();
+}
+addEventListener('vong3d', function () {
+  V3D.khi.chon = function (g) { dangChon = g && dangChon !== g ? g : null; ve(); };
+  V3D.khi.doi = function (g, j) { doiCho(g, g.k, j); };
+  V3D.khi.khung = function () { if (dangChon && cheDo === 'sua') datBong(); };
+  if (TK.day.length) ve(true);
+});
+
+/* chế độ thiết kế: chỉ vẽ vòng đang chọn */
+function veVong(lanDau) {
+  dungTu = false;
+  var n = soHat(), r = rHat(), rc = r * 1.55, k = vongDang, h = '<defs>' + defsChung(rc) + '</defs>';
+  h += '<circle cx="' + CX + '" cy="' + CY + '" r="' + R + '" fill="none" stroke="rgba(29,58,70,.18)" stroke-width="1.2"/>';
+  var bo = boCuc(k), treo = '';
+  bo.ds.forEach(function (x) {
+    if (x.hat) {
+      var p = xyHat(x.j), d = lanDau ? ' style="animation-delay:' + (x.j * 18) + 'ms"' : '';
+      h += '<g class="hat' + (lanDau ? ' moc' : '') + '"' + d + ' transform="translate(' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ')">' + svgHat(bo.rh, (k * 5 + x.j * 7) % 3) + '</g>';
+      return;
+    }
+    var g = x.g, s = '<g class="charm-g' + (g === dangChon ? ' chon' : '') + (g.moi ? ' moi' : '') + '" data-o="' + g.k + '.' + g.j + '">' + svgCharmVong(g, x, g === dangChon) + '</g>';
+    if (x.treo) treo += s; else h += s;
+    g.moi = false;
+  });
+  var mo = h.indexOf('</defs>') + 7;   // charm treo chèn ngay sau defs → khoen nằm dưới hạt, thân thõng ra ngoài
+  $('#vong').innerHTML = h.slice(0, mo) + treo + h.slice(mo);
+  nhanGiua();
+}
+function nhanGiua() {
+  var n = soHat(), k = vongDang;
+  $('#nhanGiua').innerHTML = cheDo === 'deo' ? '' : chon.day
+    ? '<small>' + (chon.vong > 1 ? 'Vòng ' + (k + 1) + '/' + chon.vong + ' · ' : '') + n + ' hạt · ' + String(chon.day.co).replace('.', ',') + ' ly</small><b>' + e(chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '')) + '</b><span>' + uoc(tong()) + '</span>'
+    : '<small>Bắt đầu</small><b>Chọn dây ngọc</b><span>ở bước 01</span>';
+}
+
+/* tab vòng + nút đeo thử */
+function dungTabVong() {
+  var L = chon.vong, n = soHat(), h = '';
+  if (L > 1) for (var k = 0; k < L; k++) {
+    var c = cuaVong(k), cham = c.map(function (g) { var a = -Math.PI / 2 + g.j * 2 * Math.PI / n; return '<circle cx="' + (12 + 8 * Math.cos(a)).toFixed(1) + '" cy="' + (12 + 8 * Math.sin(a)).toFixed(1) + '" r="2.2" fill="#c9a35c" stroke="none"/>'; }).join('');
+    h += '<button class="' + (cheDo === 'sua' && k === vongDang ? 'on' : '') + '" data-k="' + k + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="8"/>' + cham + '</svg>Vòng ' + (k + 1) + '<small>' + c.length + '</small></button>';
+  }
+  else h += '<button class="' + (cheDo === 'sua' ? 'on' : '') + '" data-k="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="8"/></svg>Thiết kế</button>';
+  h += '<button class="deo-thu' + (cheDo === 'deo' ? ' on' : '') + '" data-deo><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 9c4-1 8-1 12 0l4-2c1 0 2 1 1.5 2L17 12l3.5 3c.5 1-.5 2-1.5 2l-4-2c-4 1-8 1-12 0"/><ellipse cx="10" cy="12" rx="2" ry="4.2"/></svg>Đeo thử trên tay</button>';
+  $('#tabVong').innerHTML = h;
+  var xoa = $('[data-lam="xoa"]'); if (xoa) xoa.lastChild.textContent = L > 1 ? 'Bỏ charm vòng này' : 'Bỏ hết charm';
+}
+$('#tabVong').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button'); if (!b) return;
+  dangChon = null;
+  if (b.hasAttribute('data-deo')) { if (!chon.day) { baoTin('Chọn dây ngọc ở bước 01 trước nhé'); return; } cheDo = 'deo'; }
+  else { cheDo = 'sua'; vongDang = +b.dataset.k; }
+  ve(true);
+});
+
+/* ---------- ĐEO THỬ: cả chuỗi quấn trên cổ tay, kéo ngang để xoay ---------- */
+var tay = null, xoay = 0, dungTu = false;
+function veTay() {
+  var n = soHat(), L = chon.vong, s = 3.3, co = chon.day ? chon.day.co : 6, r = co / 2 * s,
+      b = (chon.tay + 1.5) * 10 / (2 * Math.PI) * s, h0 = chon.tay * 10 / (2 * Math.PI) * s, a = b * .36, rc = r * 1.75,
+      buocX = r * 2.05, xc = 196 + (L - 1) * buocX / 2, Y = 192, hx = xc + r * 2.6, u = h0 / 57;   // hx: chỗ cổ tay nối bàn tay
+  var cs = []; for (var k = 0; k < L; k++) cs.push(xc - k * buocX);
+  function X(v) { return (hx + v * u).toFixed(1); }
+  function Yd(v) { return (v * u).toFixed(1); }
+  // cánh tay nằm ngang, bàn tay bên phải (toạ độ bàn tay co giãn theo cỡ cổ tay)
+  var T = Y - h0, B = Y + h0;
+  var canhTay = 'M-40,' + (T - 30) + ' C60,' + (T - 22) + ' ' + (hx - 70) + ',' + (T - 4) + ' ' + hx + ',' + T +
+    ' C' + X(28) + ',' + (T - +Yd(3)) + ' ' + X(50) + ',' + (T - +Yd(8)) + ' ' + X(76) + ',' + (T - +Yd(5)) +
+    ' C' + X(108) + ',' + (T + +Yd(1)) + ' ' + X(136) + ',' + (T + +Yd(12)) + ' ' + X(140) + ',' + (Y - +Yd(16)) +
+    ' C' + X(146) + ',' + (Y + +Yd(6)) + ' ' + X(138) + ',' + (B - +Yd(10)) + ' ' + X(112) + ',' + (B + +Yd(2)) +
+    ' C' + X(80) + ',' + (B + +Yd(7)) + ' ' + X(30) + ',' + (B + +Yd(2)) + ' ' + hx + ',' + B +
+    ' C' + (hx - 70) + ',' + (B + 5) + ' 60,' + (B + 22) + ' -40,' + (B + 30) + ' Z';
+  var ngonCai = 'M' + X(30) + ',' + (T - +Yd(2)) + ' C' + X(44) + ',' + (T - +Yd(26)) + ' ' + X(74) + ',' + (T - +Yd(38)) + ' ' + X(94) + ',' + (T - +Yd(30)) +
+    ' C' + X(106) + ',' + (T - +Yd(24)) + ' ' + X(96) + ',' + (T - +Yd(10)) + ' ' + X(72) + ',' + (T - +Yd(4)) + ' Z';
+  var ke = ''; [-.42, .04, .46].forEach(function (t) { var y = Y + t * h0; ke += '<path d="M' + X(88) + ',' + (y - 2).toFixed(1) + ' C' + X(108) + ',' + y.toFixed(1) + ' ' + X(124) + ',' + (y + 1).toFixed(1) + ' ' + X(138) + ',' + (y + 3).toFixed(1) + '" stroke="rgba(150,96,70,.25)" stroke-width="1.2" fill="none"/>'; });
+  var items = '';
+  for (k = 0; k < L; k++) for (var j = 0; j < n; j++) {
+    var g = oDo(k, j);
+    items += '<g class="t-hat" data-k="' + k + '" data-j="' + j + '"' + (g ? ' data-o="' + k + '.' + j + '"' : '') + '>' + (g ? (window.phacCharm ? phac(g.c, -r * 1.6, -r * (kieuXo(g.c) === 'treo' ? .6 : 1.6), r * 3.2) : svgCharm(g, rc, false)) : svgHat(r, (k * 5 + j * 7) % 3)) + '</g>';
+  }
+  $('#vong').innerHTML = '<defs>' + defsChung(rc) +
+    '<linearGradient id="da" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3dac6"/><stop offset=".45" stop-color="#e7bfa3"/><stop offset="1" stop-color="#c9937a"/></linearGradient>' +
+    '<radialGradient id="bongTay" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#1d3a46" stop-opacity=".22"/><stop offset="1" stop-color="#1d3a46" stop-opacity="0"/></radialGradient>' +
+    '<clipPath id="khungTay"><circle cx="200" cy="200" r="199"/></clipPath></defs>' +
+    '<g clip-path="url(#khungTay)"><ellipse cx="200" cy="' + (B + 46) + '" rx="230" ry="26" fill="url(#bongTay)"/>' +
+    '<g id="tauSau"></g><path d="' + canhTay + '" fill="url(#da)"/><path d="' + ngonCai + '" fill="url(#da)" stroke="rgba(150,96,70,.25)" stroke-width="1"/>' + ke +
+    '<path d="M-40,' + (T - 14) + ' C80,' + (T - 6) + ' 170,' + (T + 4) + ' ' + hx + ',' + (T + 8) + '" stroke="#fff" stroke-opacity=".35" stroke-width="5" fill="none" stroke-linecap="round"/>' +
+    '<g id="tayTruoc">' + items + '</g></g>';
+  tay = {n: n, L: L, b: b, a: a, Y: Y, cs: cs, nut: $$('#vong .t-hat'), sau: $('#tauSau'), truoc: $('#tayTruoc')};
+  $('#nhanGiua').innerHTML = '';
+  capNhatTay();
+  if (!dungTu && !GIAM) tuXoay();
+}
+function capNhatTay() {
+  if (!tay) return;
+  var ds = tay.nut.map(function (el) {
+    var k = +el.dataset.k, j = +el.dataset.j, f = 2 * Math.PI * (j - tay.n / 2) / tay.n + xoay, sau = Math.cos(f);
+    var x = tay.cs[k] + tay.a * sau, y = tay.Y + tay.b * Math.sin(f), sc = .86 + .14 * sau;
+    el.setAttribute('transform', 'translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') scale(' + sc.toFixed(3) + ')');
+    el.style.opacity = sau < 0 ? (.75 + .25 * (1 + sau)).toFixed(2) : 1;
+    return {el: el, sau: sau};
+  });
+  ds.sort(function (p, q) { return p.sau - q.sau; });
+  ds.forEach(function (p) { (p.sau < 0 ? tay.sau : tay.truoc).appendChild(p.el); });
+}
+var henXoay = 0;
+function tuXoay() {   // xoay chậm tự động cho tới khi khách tự kéo
+  cancelAnimationFrame(henXoay);
+  (function b() { if (cheDo !== 'deo' || dungTu) return; xoay += .006; capNhatTay(); henXoay = requestAnimationFrame(b); })();
+}
+
+/* ---------- bong bóng thông tin charm đang chọn ---------- */
+function bong() {
+  var b = $('#bongCharm'), g = dangChon;
+  if (!g || cheDo !== 'sua' || chon.gan.indexOf(g) < 0) { b.hidden = true; return; }
+  b.hidden = false;
+  var bt = window.V3D && V3D.bien ? V3D.bien(g.c.id) : null;
+  b.innerHTML = '<b>' + e(g.c.ten) + '</b><span>' + gia(g.c.gia) + ' · ' + tenVt(g) + '</span>' +
+    (bt ? '<div class="mau-charm">' + bt.map(function (m, i) { return '<button data-mau="' + e(m.k) + '" class="' + ((g.mau || bt[0].k) === m.k ? 'on' : '') + '">' + e(m.ten) + '</button>'; }).join('') + '</div>' : '') +
+    '<div><button data-dich="-1" aria-label="Dời sang trái">‹</button><button data-dich="1" aria-label="Dời sang phải">›</button>' +
+    (chon.vong > 1 ? '<select data-sang aria-label="Chuyển sang vòng khác"><option value="">Sang vòng…</option>' +
+      Array.from({length: chon.vong}, function (_, i) { return i === g.k ? '' : '<option value="' + i + '">Vòng ' + (i + 1) + '</option>'; }).join('') + '</select>' : '') +
+    '<button data-bo>Bỏ</button></div>';
+  datBong();
+}
+function datBong() {   // chỉ đặt lại vị trí bong bóng (3D: gọi mỗi khung hình vì vòng xoay / charm lướt)
+  var b = $('#bongCharm'), g = dangChon; if (!g || b.hidden) return;
+  if (window.V3D) { var v = V3D.viTri(g); if (!v) return; b.style.left = v[0].toFixed(1) + 'px'; b.style.top = v[1].toFixed(1) + 'px'; b.className = 'bong-charm ' + (v[2] ? 'duoi' : 'tren'); return; }
+  var p = xyHat(g.j), k = $('#vong').getBoundingClientRect().width / 400;
+  b.style.left = p[0] * k + 'px'; b.style.top = p[1] * k + 'px';
+  b.className = 'bong-charm ' + (p[1] > CY ? 'tren' : 'duoi');
+}
+function doiCho(g, k, j) {
+  var khac = oDo(k, j);
+  if (khac && khac !== g) { khac.k = g.k; khac.j = g.j; }
+  g.k = k; g.j = j; dangChon = g; ve();
+}
+$('#bongCharm').addEventListener('click', function (ev) {
+  var g = dangChon; if (!g) return;
+  var d = ev.target.closest('[data-dich]'), n = soHat();
+  if (d) doiCho(g, g.k, (g.j + +d.dataset.dich + n) % n);
+  if (ev.target.closest('[data-bo]')) boMot(g);
+  var m = ev.target.closest('[data-mau]'); if (m) { g.mau = m.dataset.mau; ve(); }   // charm có nhiều màu: đổi màu ngay trên vòng 3D
+});
+$('#bongCharm').addEventListener('change', function (ev) {
+  var s = ev.target.closest('[data-sang]'), g = dangChon; if (!s || !g || s.value === '') return;
+  var k = +s.value, j = oDo(k, g.j) ? viTriTrong(k) : g.j;
+  if (j < 0) { baoTin('Vòng ' + (k + 1) + ' đã đầy'); return; }
+  g.k = k; g.j = j; vongDang = k; dangChon = g; ve();
+  baoTin('Đã chuyển charm sang vòng ' + (k + 1));
+});
+
+/* ---------- kéo: thiết kế = đổi chỗ charm; đeo thử = xoay tay ---------- */
+(function () {
+  var svg = $('#vong'), keo = null;
+  function jTuChuot(ev) {
+    var r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width * 400 - CX, y = (ev.clientY - r.top) / r.height * 400 - CY;
+    var a = Math.atan2(y, x), n = soHat(), tot = 0, kc = 9;
+    for (var j = 0; j < n; j++) { var d = Math.abs(((a - gocHat(j)) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI); if (d < kc) { kc = d; tot = j; } }
+    return tot;
+  }
+  svg.addEventListener('pointerdown', function (ev) {
+    if (cheDo === 'deo') { dungTu = true; keo = {x: ev.clientX, xoay: xoay, tay: true}; svg.setPointerCapture(ev.pointerId); ev.preventDefault(); return; }
+    var el = ev.target.closest('.charm-g');
+    if (!el) { if (dangChon) { dangChon = null; ve(); } return; }
+    var p = el.dataset.o.split('.'), g = oDo(+p[0], +p[1]);
+    keo = {g: g, dichuyen: false}; svg.setPointerCapture(ev.pointerId); ev.preventDefault();
+  });
+  svg.addEventListener('pointermove', function (ev) {
+    if (!keo) return;
+    if (keo.tay) { xoay = keo.xoay + (ev.clientX - keo.x) * .012; capNhatTay(); return; }
+    var j = jTuChuot(ev); if (j === keo.g.j) return;
+    doiCho(keo.g, keo.g.k, j); keo.dichuyen = true;
+  });
+  svg.addEventListener('pointerup', function () {
+    if (keo && !keo.tay && !keo.dichuyen) { dangChon = dangChon === keo.g ? null : keo.g; ve(); }
+    keo = null;
+  });
+})();
+addEventListener('resize', bong);
+
+/* ---------- số vòng quấn ---------- */
+function dungVong() {
+  $('#soVong').innerHTML = [1, 2, 3, 4, 5].map(function (v) {
+    var vong = ''; for (var k = 0; k < v; k++) vong += '<ellipse cx="16" cy="' + (16 + (k - (v - 1) / 2) * 3.2).toFixed(1) + '" rx="11" ry="4.2"/>';
+    return '<button class="' + (v === chon.vong ? 'on' : '') + '" data-v="' + v + '"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2">' + vong + '</svg>' +
+      '<b>' + v + ' vòng</b><small>' + (chon.day ? gia(giaDay(chon.day, v)) : (v === 1 ? 'quấn đơn' : 'quấn ' + v)) + '</small></button>';
+  }).join('');
+}
+$('#soVong').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button'); if (!b) return;
+  chon.vong = +b.dataset.v; dangChon = null;
+  var bo = chuanHoa();
+  if (bo) { baoTin('Đã bỏ ' + bo + ' charm ở các vòng bị bớt'); danhDauDa(); }
+  dungVong(); dungDay(); ve(true);
+});
+
+/* ---------- bước 01: dây nền ---------- */
+function dungDay() {
+  $('#dsDay').innerHTML = TK.day.map(function (d, i) {
+    return '<button class="the-day' + (chon.day === d ? ' on' : '') + '" data-i="' + i + '">' +
+      '<span class="mau-hat" style="background:radial-gradient(circle at 35% 30%,#fff 0,' + d.mau[0] + ' 22%,' + d.mau[1] + ' 85%)"></span>' +
+      '<span class="tt-day"><b>' + e(d.ten) + '</b><small>#' + e(d.ma) + ' · hạt ' + String(d.co).replace('.', ',') + ' ly</small></span>' +
+      '<span class="gia-day">' + gia(giaDay(d)) + '<small>' + chon.vong + ' vòng</small></span>' +
+      (d.anh ? '<span class="xem-day">' + tkHinh(d.anh, d.ten, 300) + '</span>' : '') + '</button>';
+  }).join('');
+}
+$('#dsDay').addEventListener('click', function (ev) {
+  var b = ev.target.closest('.the-day'); if (!b) return;
+  chon.day = TK.day[+b.dataset.i]; dungDay(); dungVong(); ve(true);
+});
+$('#coTay').addEventListener('input', function () { chon.tay = +this.value; $('#gtTay').textContent = String(chon.tay).replace('.', ',') + ' cm'; ve(); });
+
+/* ---------- bước 03: charm ---------- */
+function dungChip() {
+  var dem = {}; TK.charm.forEach(function (c) { dem[c.nhom] = (dem[c.nhom] || 0) + 1; });
+  var ds = Object.keys(dem).sort(function (a, b) { return a === 'Khác' ? 1 : b === 'Khác' ? -1 : dem[b] - dem[a]; });
+  $('#chipNhom').innerHTML = '<button class="on" data-n="tat">Tất cả<span>' + TK.charm.length + '</span></button>' +
+    ds.map(function (n) { return '<button data-n="' + e(n) + '">' + e(n) + '<span>' + dem[n] + '</span></button>'; }).join('');
+}
+$('#chipNhom').addEventListener('click', function (ev) {
+  var b = ev.target.closest('button'); if (!b) return;
+  nhomLoc = b.dataset.n; $$('#chipNhom button').forEach(function (x) { x.classList.toggle('on', x === b); }); hienCharm(true);
+});
+var henC; $('#timCharm').oninput = function () { clearTimeout(henC); var v = this.value; henC = setTimeout(function () { tuCharm = boDau(v.trim()); hienCharm(true); }, 160); };
+$('#xepCharm').onchange = function () { xepC = this.value; hienCharm(true); };
+$('#themCharm').onclick = function () { hienCharm(false); };
+function soGan(c) { return chon.gan.filter(function (g) { return g.c === c; }).length; }   // 1 charm có thể gắn nhiều lần
+function daGan(c) { return soGan(c) > 0; }
+function danhDauDa() { $$('#dsCharm .the-charm').forEach(function (b) {
+  var n = chon.gan.filter(function (g) { return g.c.id === b.dataset.id; }).length;
+  b.classList.toggle('da', n > 0); b.querySelector('.so-gan').textContent = n > 1 ? '×' + n : '';
+}); }
+function hienCharm(lai) {
+  var r = TK.charm.filter(function (c) { return (nhomLoc === 'tat' || c.nhom === nhomLoc) && (!tuCharm || boDau(c.ten + ' ' + c.ma).indexOf(tuCharm) >= 0); });
+  r.sort(function (a, b) { return xepC === 're' ? a.gia - b.gia : b.gia - a.gia; });
+  if (lai) { soCharmHien = 0; $('#dsCharm').innerHTML = ''; }
+  var moi = r.slice(soCharmHien, soCharmHien + MOI); soCharmHien += moi.length;
+  $('#dsCharm').insertAdjacentHTML('beforeend', moi.map(function (c) {
+    return '<button class="the-charm' + (daGan(c) ? ' da' : '') + '" data-id="' + e(c.id) + '"><span class="h-vo"><span class="h">' + tkHinh(c.anh, c.ten, 300) + '</span>' +
+      '<i class="dau-cong"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path class="cong" d="M12 6v12M6 12h12"/><path class="tick" d="M6 12.5l4 4 8-9"/></svg></i>' +
+      '<em class="so-gan">' + (soGan(c) > 1 ? '×' + soGan(c) : '') + '</em><i class="bot-charm" role="button" aria-label="Gỡ bớt một charm này" title="Gỡ bớt 1">−</i></span>' +
+      '<b>' + e(c.ten) + '</b><small>' + gia(c.gia) + '</small></button>';
+  }).join(''));
+  if (!r.length) $('#dsCharm').innerHTML = '<p class="tk-rong">Không có charm nào khớp.</p>';
+  $('#themCharm').style.display = soCharmHien < r.length ? '' : 'none';
+  $('#themCharm').textContent = 'Xem thêm · ' + (r.length - soCharmHien) + ' charm';
+}
+$('#dsCharm').addEventListener('click', function (ev) {
+  var b = ev.target.closest('.the-charm'); if (!b) return;
+  var c = TK.charm.filter(function (x) { return x.id === b.dataset.id; })[0];
+  // gỡ bớt viên gắn sau cùng. iPhone (Safari) báo cú chạm vào nút "−" là chạm vào cả thẻ (ev.target = thẻ),
+  // nên xét theo toạ độ ngón tay: trong vòng nút "−" (nới thêm 14px) là gỡ, không phải gắn thêm.
+  var bot = b.querySelector('.bot-charm'), rb = bot && ev.detail && b.classList.contains('da') ? bot.getBoundingClientRect() : null;
+  var trungBot = ev.target.closest('.bot-charm') || (rb && ev.clientX >= rb.left - 14 && ev.clientX <= rb.right + 14 && ev.clientY >= rb.top - 14 && ev.clientY <= rb.bottom + 14);
+  if (trungBot) {
+    var cuoi = chon.gan.filter(function (g) { return g.c === c; }).pop(); if (cuoi) boMot(cuoi); return;
+  }
+  if (!chon.day) { baoTin('Chọn dây ngọc ở bước 01 trước nhé'); $('#dsDay').scrollIntoView({block: 'center'}); return; }
+  if (chon.gan.length >= TOI_DA) { baoTin('Tối đa ' + TOI_DA + ' charm cho một chuỗi'); return; }
+  if (cheDo === 'deo') cheDo = 'sua';
+  var j = viTriTrong(vongDang);
+  if (j < 0) { baoTin('Vòng ' + (vongDang + 1) + ' đã đầy'); return; }
+  chon.gan.push({c: c, k: vongDang, j: j, moi: true}); dangChon = null;
+  danhDauDa(); ve();
+  if (chon.vong > 1) baoTin('Đã gắn vào vòng ' + (vongDang + 1));
+  nhayMini();
+});
+function boMot(g) { chon.gan = chon.gan.filter(function (x) { return x !== g; }); dangChon = null; danhDauDa(); ve(); }
+function boCharm(c) {
+  chon.gan = chon.gan.filter(function (g) { return g.c !== c; }); dangChon = null;
+  danhDauDa(); ve();
+}
+
+/* ---------- công cụ (áp cho vòng đang thiết kế) ---------- */
+$('.cong-cu').addEventListener('click', function (ev) {
+  var b = ev.target.closest('[data-lam]'); if (!b) return;
+  var n = soHat(), ds = cuaVong(vongDang), m = ds.length, lam = b.dataset.lam;
+  if (lam === 'deu' && m) { ds.forEach(function (g, i) { g.j = Math.round(n / 2 + i * n / m) % n; }); dangChon = null; ve(); }
+  if (lam === 'gom' && m) { ds.forEach(function (g) { g.j = -1; }); ds.forEach(function (g) { g.j = viTriTrong(vongDang); }); dangChon = null; ve(); }
+  if (lam === 'xoa') { chon.gan = chon.gan.filter(function (g) { return chon.vong > 1 && g.k !== vongDang; }); dangChon = null; danhDauDa(); ve(); }
+  if (lam === 'link') { if (navigator.clipboard) navigator.clipboard.writeText(location.href).catch(function () {}); baoTin('Đã chép link thiết kế — gửi cho bạn bè xem nhé'); }
+});
+
+/* ---------- tóm tắt + gửi ---------- */
+function tenMau(g) { var bt = window.V3D && V3D.bien ? V3D.bien(g.c.id) : null, m = bt && bt.filter(function (x) { return x.k === g.mau; })[0]; return m ? m.ten : g.mau; }
+function thuTu() { return chon.gan.slice().sort(function (a, b) { return a.k - b.k || a.j - b.j; }); }
+function tinNhan() {
+  var n = soHat(), L = chon.vong;
+  return 'Chào Jadora, mình muốn đặt chuỗi tự thiết kế:\n' +
+    '• Dây: ' + chon.day.ten + ' (mã ' + chon.day.ma + ')\n' +
+    '• Kiểu: quấn ' + L + ' vòng · cỡ tay ' + String(chon.tay).replace('.', ',') + ' cm (~' + n * L + ' hạt, ' + n + ' hạt/vòng)\n' +
+    '• Giá dây ' + L + ' vòng: ' + gia(giaDay()) + '\n' +
+    (chon.gan.length ? '• Charm (đếm hạt theo chiều kim đồng hồ từ khoá' + (L > 1 ? ', vòng 1 là vòng sát bàn tay' : '') + '):\n' + thuTu().map(function (g) { return '   – ' + tenVt(g) + ': ' + g.c.ma + ' ' + g.c.ten + (g.mau ? ' – ' + tenMau(g) : '') + ' (' + gia(g.c.gia) + ')'; }).join('\n') + '\n' : '• Không gắn charm\n') +
+    '• Tổng ước tính: ' + uoc(tong()) + ' (nhờ shop báo giá chính xác)\n' +
+    'Xem thiết kế: ' + location.href;
+}
+function tomTat() {
+  var n = tongHat();
+  if (!chon.day) { $('#tomTat').innerHTML = ''; $('#thanhTk').classList.remove('tk-hien'); return; }
+  $('#tomTat').innerHTML = '<header><span class="so-buoc">04</span><h2>Thiết kế của bạn</h2></header>' +
+    '<ul class="dong-tt"><li><span>' + e(chon.day.ten) + '<small>Dây quấn ' + chon.vong + ' vòng · ' + n + ' hạt · cỡ tay ' + String(chon.tay).replace('.', ',') + ' cm</small></span><b>' + gia(giaDay()) + '</b></li>' +
+    thuTu().map(function (g) { return '<li><span>' + e(g.c.ten) + '<small>Charm #' + e(g.c.ma) + ' · ' + tenVt(g) + '</small></span><b>' + gia(g.c.gia) + '</b></li>'; }).join('') + '</ul>' +
+    '<div class="tong-tt"><span>Tổng ước tính</span><b>' + uoc(tong()) + '</b></div>' +
+    '<p class="ghi-tt">Tổng chỉ là giá xấp xỉ để bạn tham khảo. Giá chính xác cửa hàng sẽ báo lại sau khi xem thiết kế, kiểm tra hàng còn và tiền công xâu.</p>' +
+    '<p class="ghi-tt luu-y">' + e(CHINH_SACH.luuY[0]) + '</p>' +
+    '<div class="hang-mua"><a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-gui>Gửi thiết kế qua Zalo</a>' +
+    '<a class="nut" href="' + linkFb() + '" target="_blank" data-gui>Gửi qua Messenger</a></div>' +
+    '';
+  $('#thanhTk').innerHTML = '<div><small>Tổng ước tính · ' + chon.gan.length + ' charm</small><b>' + uoc(tong()) + '</b></div><a class="nut dac zalo" href="' + linkZalo() + '" target="_blank" data-gui>Gửi qua Zalo</a>';
+  $('#thanhTk').classList.add('tk-hien');
+  $('#demCharm').textContent = chon.gan.length + ' / ' + TOI_DA + ' charm';
+}
+/* ---------- gửi thiết kế: hộp hướng dẫn + ảnh thiết kế (link Zalo/Messenger không tự điền được tin nhắn) ---------- */
+function chepChu(s) {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(s).then(function () { return true; }, function () { return chepCu(s); });
+  return Promise.resolve(chepCu(s));
+}
+function chepCu(s) { try { var a = document.createElement('textarea'); a.value = s; a.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(a); a.select(); var ok = document.execCommand('copy'); a.remove(); return ok; } catch (er) { return false; } }
+function anhDataUrl(u) { return fetch(u).then(function (r) { return r.blob(); }).then(function (b) { return new Promise(function (ok) { var f = new FileReader(); f.onload = function () { ok(f.result); }; f.readAsDataURL(b); }); }); }
+// ảnh thiết kế 1080×1350: vòng đang thiết kế + tóm tắt
+function taoAnhTk() {
+  if (window.V3D) return new Promise(function (ok, loi) { var c3 = V3D.anh(), w = c3.width, h = c3.height;   // vòng 3D: chụp thẳng khung vẽ
+    ghepAnh(c3, 860 * Math.min(1, w / h), 860 * Math.min(1, h / w), ok, loi); });
+  var cu = cheDo; if (cu === 'deo') { cheDo = 'sua'; veVong(); }
+  var svg = $('#vong').cloneNode(true); if (cu === 'deo') { cheDo = cu; ve(); }
+  svg.querySelectorAll('.vong-chon').forEach(function (x) { x.remove(); });
+  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); svg.setAttribute('width', 400); svg.setAttribute('height', 400);
+  var anh = [].slice.call(svg.querySelectorAll('image')).filter(function (i) { return !/^data:/.test(i.getAttribute('href') || ''); });
+  return Promise.all(anh.map(function (i) { return anhDataUrl(i.getAttribute('href')).then(function (d) { i.setAttribute('href', d); }).catch(function () {}); })).then(function () {
+    return new Promise(function (ok, loi) {
+      var im = new Image(), url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], {type: 'image/svg+xml'}));
+      im.onload = function () { URL.revokeObjectURL(url); ghepAnh(im, 860, 860, ok, loi); };
+      im.onerror = function () { URL.revokeObjectURL(url); loi(); };
+      im.src = url;
+    });
+  });
+}
+function ghepAnh(im, iw, ih, ok, loi) {   // khung 1080×1350: hình vòng + tên dây, cỡ, danh sách charm, tổng ước tính
+        var W = 1080, H = 1350, c = document.createElement('canvas'), x = c.getContext('2d'); c.width = W; c.height = H;
+        x.fillStyle = '#F6F1EA'; x.fillRect(0, 0, W, H);
+        x.fillStyle = '#587553'; x.font = '500 26px "Be Vietnam Pro", sans-serif'; x.textAlign = 'center'; x.fillText('JADORA · THIẾT KẾ CHUỖI', W / 2, 78);
+        var g = x.createRadialGradient(W / 2, 520, 60, W / 2, 520, 470); g.addColorStop(0, '#FFFDF8'); g.addColorStop(1, '#EEF0E3');
+        x.fillStyle = g; x.beginPath(); x.arc(W / 2, 520, 440, 0, 7); x.fill();
+        x.drawImage(im, W / 2 - iw / 2, 520 - ih / 2, iw, ih);
+        x.fillStyle = '#2A2622'; x.font = '400 46px "Fraunces", Georgia, serif';
+        x.fillText(chon.day.ten, W / 2, 1010, W - 120);
+        x.font = '400 28px "Be Vietnam Pro", sans-serif'; x.fillStyle = '#5b6b70';
+        x.fillText('Quấn ' + chon.vong + ' vòng · cỡ tay ' + String(chon.tay).replace('.', ',') + ' cm · ' + tongHat() + ' hạt · ' + chon.gan.length + ' charm', W / 2, 1060, W - 120);
+        var ds = thuTu().map(function (q) { return q.c.ten.replace(/^Charm\s+/i, ''); }), dong = '', dongs = [];
+        ds.forEach(function (s) { var t2 = dong ? dong + ' · ' + s : s; if (x.measureText(t2).width > W - 140 && dong) { dongs.push(dong); dong = s; } else dong = t2; });
+        if (dong) dongs.push(dong);
+        x.font = '400 24px "Be Vietnam Pro", sans-serif'; dongs.slice(0, 3).forEach(function (s, i) { x.fillText(s + (i === 2 && dongs.length > 3 ? ' …' : ''), W / 2, 1110 + i * 34, W - 120); });
+        x.fillStyle = '#587553'; x.font = '500 40px "Fraunces", Georgia, serif'; x.fillText('Tổng ước tính ' + uoc(tong()), W / 2, 1250);
+        x.fillStyle = '#8a8070'; x.font = '400 22px "Be Vietnam Pro", sans-serif'; x.fillText('Ảnh thiết kế từ web Jadora · giá chính xác cửa hàng báo lại', W / 2, 1300, W - 120);
+        c.toBlob(function (b) { b ? ok(b) : loi(); }, 'image/png');
+}
+var hopGui = null, anhGui = null;
+function moHopGui(kenh) {
+  var chu = tinNhan(), coChiaSe = false, dienThoai = matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
+  try { coChiaSe = dienThoai && !!(navigator.canShare && navigator.canShare({files: [new File(['x'], 'a.png', {type: 'image/png'})]})); } catch (er) {}   // máy tính: bảng chia sẻ không có Zalo/Messenger → ẩn
+  if (!hopGui) { hopGui = document.createElement('div'); hopGui.className = 'hop-gui'; document.body.appendChild(hopGui);
+    hopGui.addEventListener('click', function (ev) { if (ev.target === hopGui || ev.target.closest('[data-dong]')) dongHopGui(); }); }
+  var mo = kenh === 'ms' ? linkFb() : linkZalo(), ten = kenh === 'ms' ? 'Messenger' : 'Zalo';
+  hopGui.innerHTML = '<div class="hop" role="dialog" aria-label="Gửi thiết kế cho Jadora"><button class="hg-dong" data-dong aria-label="Đóng">×</button>' +
+    '<h3>Gửi thiết kế cho <em>Jadora</em></h3>' +
+    '<div class="anh-gui"><span>Đang tạo ảnh thiết kế…</span></div>' +
+    (coChiaSe ? '<button class="nut dac chinh-gui" data-chia-se>Gửi ảnh + tin nhắn qua ' + ten + '</button><p class="goi-y-gui">Chọn <b>' + ten + '</b> trong bảng chia sẻ, chọn Jadora rồi gửi.</p>' : '') +
+    '<ol class="buoc-gui"><li><b>Tin nhắn thiết kế đã được chép sẵn.</b> <button class="lien" data-chep-tk>Chép lại</button></li>' +
+    '<li>Lưu ảnh thiết kế: <a class="lien" data-tai href="#" download="thiet-ke-jadora.png">Tải ảnh</a></li>' +
+    (dienThoai ? '<li>Mở ' + ten + ' Jadora, <b>giữ ô chat → Dán</b> tin nhắn và gửi kèm ảnh.</li></ol>'
+      : '<li>Bấm nút bên dưới. ' + (kenh === 'ms' ? 'Trên trang Facebook Jadora hiện ra, bấm nút <b>“Nhắn tin”</b>, rồi trong khung chat' : 'Trên trang Zalo hiện ra, bấm nút xanh <b>“Nhắn tin”</b>, rồi trong khung chat') +
+        ' <b>dán tin nhắn</b> (' + (/Mac/.test(navigator.platform) ? '⌘V' : 'Ctrl+V') + ') và gửi kèm ảnh vừa tải.</li></ol>') +
+    '<a class="nut ' + (coChiaSe ? '' : 'dac ') + (kenh === 'ms' ? 'ms' : 'zalo') + ' mo-kenh" href="' + mo + '" target="_blank" rel="noopener">Mở ' + ten + ' Jadora</a>' +
+    '<details class="xem-chu"><summary>Xem nội dung tin nhắn</summary><pre>' + e(chu) + '</pre></details></div>';
+  hopGui.classList.add('tk-mo'); document.documentElement.classList.add('khoa-cuon');
+  chepChu(chu).then(function (ok) { if (!ok) hopGui.querySelector('.buoc-gui b').textContent = 'Bấm "Chép lại" để chép tin nhắn thiết kế.'; });
+  anhGui = null;
+  taoAnhTk().then(function (b) {
+    anhGui = b; var u = URL.createObjectURL(b);
+    hopGui.querySelector('.anh-gui').innerHTML = '<img src="' + u + '" alt="Ảnh thiết kế chuỗi">';
+    hopGui.querySelector('[data-tai]').href = u;
+  }).catch(function () { hopGui.querySelector('.anh-gui').innerHTML = '<span>Chưa tạo được ảnh — bạn có thể gửi link thiết kế trong tin nhắn.</span>'; });
+}
+function dongHopGui() { if (hopGui) hopGui.classList.remove('tk-mo'); document.documentElement.classList.remove('khoa-cuon'); }
+document.addEventListener('click', function (ev) {
+  var a = ev.target.closest('[data-gui]');
+  if (a && chon.day) { ev.preventDefault(); moHopGui(a.classList.contains('zalo') ? 'zalo' : 'ms'); return; }
+  if (ev.target.closest('[data-chep-tk]')) { chepChu(tinNhan()).then(function (ok) { baoTin(ok ? 'Đã chép tin nhắn thiết kế' : 'Trình duyệt chặn chép — hãy chép trong mục "Xem nội dung"'); }); return; }
+  if (ev.target.closest('[data-tai]') && !anhGui) { ev.preventDefault(); baoTin('Ảnh đang tạo, chờ chút nhé'); return; }
+  if (ev.target.closest('[data-chia-se]')) {
+    if (!anhGui) { baoTin('Ảnh đang tạo, chờ chút nhé'); return; }
+    var f = new File([anhGui], 'thiet-ke-jadora.png', {type: 'image/png'});
+    navigator.share({files: [f], text: tinNhan(), title: 'Thiết kế chuỗi Jadora'}).catch(function () {});
+  }
+});
+addEventListener('keydown', function (ev) { if (ev.key === 'Escape') dongHopGui(); });
+
+/* ---------- lưu / đọc lại (link + máy) ---------- */
+function luu() {
+  if (!chon.day) return;
+  var h = 'd=' + encodeURIComponent(chon.day.ma) + '&t=' + chon.tay + '&v=' + chon.vong +
+    (chon.gan.length ? '&c=' + thuTu().map(function (g) { return encodeURIComponent(g.c.id) + '@' + g.k + '.' + g.j + (g.mau ? '~' + encodeURIComponent(g.mau) : ''); }).join(',') : '');
+  history.replaceState(null, '', '#' + h);
+  try { localStorage.setItem('jadora_thiet_ke', h); } catch (er) {}
+}
+function docLai() {
+  var h = location.hash.slice(1);
+  if (!h) try { h = localStorage.getItem('jadora_thiet_ke') || ''; } catch (er) {}
+  var q = new URLSearchParams(h);
+  chon.day = TK.day.filter(function (d) { return d.ma === q.get('d'); })[0] || null;
+  if (q.get('t')) { chon.tay = Math.min(20, Math.max(12, +q.get('t') || 15)); $('#coTay').value = chon.tay; $('#gtTay').textContent = String(chon.tay).replace('.', ',') + ' cm'; }
+  if (q.get('v')) chon.vong = Math.min(5, Math.max(1, Math.round(+q.get('v') || 1)));
+  var n = soHat();
+  (q.get('c') || '').split(',').forEach(function (s) {
+    var p = s.split('@'), c = TK.charm.filter(function (x) { return x.id === decodeURIComponent(p[0]); })[0];
+    if (!c) return;
+    var vt = String(p[1] || '0').split('~'), mau = vt[1] ? decodeURIComponent(vt[1]) : '', k, j; vt = vt[0];
+    if (vt.indexOf('.') >= 0) { k = +vt.split('.')[0]; j = +vt.split('.')[1]; } else { k = Math.floor(+vt / n); j = +vt % n; }   // link cũ: số thứ tự trên cả dây
+    chon.gan.push(mau ? {c: c, k: k || 0, j: j || 0, mau: mau} : {c: c, k: k || 0, j: j || 0});
+  });
+}
+
+/* ---------- rê chuột vào charm → hiện ảnh lớn bay theo chuột (máy tính) ---------- */
+(function () {
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  var x = document.createElement('div'); x.className = 'xem-charm'; x.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(x);
+  var dang = null, mx = 0, my = 0, px = 0, py = 0, chay = false, W = 260, H = 340;
+  function timCharm(el) {
+    var t = el.closest('.the-charm');
+    if (t) return TK.charm.filter(function (c) { return c.id === t.dataset.id; })[0];
+    var g = el.closest('[data-o]');
+    if (g) { var p = g.dataset.o.split('.'), o = oDo(+p[0], +p[1]); return o && o.c; }
+  }
+  function dich() {   // đặt khung lệch phải-dưới con trỏ, lật lại khi chạm mép màn hình
+    var tx = mx + 24, ty = my + 24;
+    if (tx + W > innerWidth - 12) tx = mx - W - 24;
+    if (ty + H > innerHeight - 12) ty = innerHeight - H - 12;
+    return [tx, Math.max(12, ty)];
+  }
+  function buoc() {
+    var d = dich(); px += (d[0] - px) * .2; py += (d[1] - py) * .2;
+    x.style.transform = 'translate3d(' + px.toFixed(1) + 'px,' + py.toFixed(1) + 'px,0)';
+    if (dang) requestAnimationFrame(buoc); else chay = false;
+  }
+  document.addEventListener('mouseover', function (ev) {
+    var c = timCharm(ev.target);
+    if (!c || ev.buttons) { if (!ev.target.closest('.the-charm,[data-o]')) an(); return; }
+    mx = ev.clientX; my = ev.clientY;
+    if (dang !== c) {
+      dang = c;
+      x.innerHTML = '<span class="h"><img src="' + anh(c.anh, 640) + '" alt="" referrerpolicy="no-referrer"></span>' +
+        '<b>' + e(c.ten) + '</b><span class="g">' + gia(c.gia) + '<small>#' + e(c.ma) + '</small></span>';
+    }
+    if (!x.classList.contains('on')) { var d = dich(); px = d[0]; py = d[1]; x.classList.add('on'); }
+    if (!chay) { chay = true; buoc(); }
+  });
+  document.addEventListener('mousemove', function (ev) { mx = ev.clientX; my = ev.clientY; if (ev.buttons && dang) an(); }, {passive: true});
+  function an() { dang = null; x.classList.remove('on'); }
+  addEventListener('scroll', an, {passive: true});
+})();
+
+/* lưu thiết kế vào tài khoản khách */
+document.addEventListener('click', function (ev) {
+  var b = ev.target.closest('#luuTk'); if (!b || !chon.day) return;
+  if (!KHACH.user) { luu(); return KHACH.canDangNhap(); }
+  moHopLuu(b);
+});
+// hộp đặt tên & lưu thiết kế (thay hộp prompt mặc định của trình duyệt)
+var hopLuu = null;
+function moHopLuu(nut) {
+  if (!hopLuu) { hopLuu = document.createElement('div'); hopLuu.className = 'hop-gui hop-luu'; document.body.appendChild(hopLuu);
+    hopLuu.addEventListener('click', function (ev) { if (ev.target === hopLuu || ev.target.closest('[data-huy]')) dongHopLuu(); }); }
+  var goiY = chon.day.ten.replace(/\s*\d+([.,]\d+)? ly/, '') + ' · ' + chon.vong + ' vòng';
+  hopLuu.innerHTML = '<form class="hop" role="dialog" aria-label="Lưu thiết kế"><button type="button" class="hg-dong" data-huy aria-label="Đóng">×</button>' +
+    '<div class="luu-dau">' + (window.V3D ? '<img src="' + anhNho(240) + '" alt="">' : '<svg viewBox="0 0 400 400" aria-hidden="true">' + $('#vong').innerHTML + '</svg>') +
+    '<div><h3>Lưu <em>thiết kế</em></h3><small>' + e(chon.day.ten) + ' · ' + chon.vong + ' vòng · ' + chon.gan.length + ' charm<br>' + uoc(tong()) + '</small></div></div>' +
+    '<label class="o-ten"><span>Đặt tên cho thiết kế</span><input name="ten" maxlength="60" value="' + e(goiY) + '" autocomplete="off"></label>' +
+    '<p class="goi-y-gui" style="text-align:left">Thiết kế được lưu vào Tài khoản của bạn — mở lại và chỉnh tiếp bất cứ lúc nào.</p>' +
+    '<div class="nut-luu"><button type="button" class="nut" data-huy>Huỷ</button><button type="submit" class="nut dac">Lưu thiết kế</button></div></form>';
+  hopLuu.classList.add('tk-mo'); document.documentElement.classList.add('khoa-cuon');
+  var f = hopLuu.querySelector('form'), o = f.ten; setTimeout(function () { o.focus(); o.select(); }, 80);
+  f.onsubmit = function (ev) {
+    ev.preventDefault();
+    var gui = f.querySelector('[type=submit]'); gui.disabled = true; gui.textContent = 'Đang lưu…'; nut.disabled = true;
+    KHACH.luuThietKe({ten: o.value.trim() || 'Thiết kế', hash: location.hash.slice(1), gia: Math.round(tong() / 10000) * 10000,
+                      moTa: chon.vong + ' vòng · ' + chon.gan.length + ' charm'})
+      .then(function () { dongHopLuu(); baoTin('Đã lưu — xem lại trong Tài khoản'); })
+      .catch(function () { gui.disabled = false; gui.textContent = 'Lưu thiết kế'; baoTin('Chưa lưu được, thử lại nhé'); })
+      .then(function () { nut.disabled = false; });
+  };
+}
+function dongHopLuu() { if (hopLuu) hopLuu.classList.remove('tk-mo'); document.documentElement.classList.remove('khoa-cuon'); }
+addEventListener('keydown', function (ev) { if (ev.key === 'Escape') dongHopLuu(); });
+
+/* ---------- điện thoại: vòng thu nhỏ nổi góc màn hình khi đang chọn charm (khỏi phải kéo lên xem) ---------- */
+var mini = document.createElement('button'), ngoaiSan = false;
+mini.type = 'button'; mini.className = 'vong-mini'; mini.setAttribute('aria-label', 'Xem chuỗi đang thiết kế');
+mini.innerHTML = '<svg viewBox="0 0 400 400" aria-hidden="true"></svg><img alt="" hidden><b></b>';
+document.body.appendChild(mini);
+function anhNho(w) {   // ảnh chụp vòng 3D thu nhỏ (dataURL)
+  var c3 = V3D.anh(), c = document.createElement('canvas'), h = Math.round(w * c3.height / c3.width); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(c3, 0, 0, w, h); return c.toDataURL('image/png');
+}
+var henMini = 0;
+function capMini() {
+  if (!mini) return;
+  if (window.V3D) {   // chỉ chụp khi vòng thu nhỏ đang hiện, gom các lần đổi liên tiếp
+    mini.querySelector('svg').style.display = 'none';
+    clearTimeout(henMini); if (ngoaiSan && innerWidth < 900) henMini = setTimeout(function () { var im = mini.querySelector('img'); im.hidden = false; im.src = anhNho(200); }, 250);
+  } else mini.querySelector('svg').innerHTML = $('#vong').innerHTML;
+  var n = cuaVong(vongDang).length;
+  mini.querySelector('b').textContent = (chon.vong > 1 ? 'Vòng ' + (vongDang + 1) + ' · ' : '') + n + ' charm';
+  mini.classList.toggle('tk-hien', ngoaiSan && !!chon.day && innerWidth < 900);
+}
+function nhayMini() { mini.classList.remove('nhay'); void mini.offsetWidth; mini.classList.add('nhay'); }
+mini.onclick = function () { $('.tk-san').scrollIntoView({behavior: 'smooth', block: 'start'}); };
+function doSan() {   // vòng lớn đã khuất (gần hết) khỏi màn hình?
+  var r = $('.san-trong').getBoundingClientRect(), moi = r.bottom < 120 || r.top > innerHeight - 120;
+  if (moi !== ngoaiSan) { ngoaiSan = moi; capMini(); }
+}
+addEventListener('scroll', doSan, {passive: true});
+addEventListener('resize', function () { doSan(); capMini(); });
+doSan();
+
+})();

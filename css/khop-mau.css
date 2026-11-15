@@ -348,3 +348,80 @@
 .a.p03,.a.p13,.a.p23{--tg:4.600s;--bien:18px;--nghieng:1.400deg}
 @media(max-width:760px){.a.p01,.a.p11,.a.p21{--bien:10px}.a.p02,.a.p12,.a.p22{--bien:8px}.a.p03,.a.p13,.a.p23{--bien:11px}}
 @media(prefers-reduced-motion:reduce){.buoc-cuon .a.bat{animation:none}}
+
+/* ---------- lookbook: thẻ sản phẩm nằm ngay cạnh chấm (bên phải; chấm ở nửa phải ảnh thì thẻ nằm bên trái) ---------- */
+@media(min-width:760px){
+  .hs-the{position:absolute;z-index:10;display:flex;margin-top:0;width:288px;left:calc(var(--x) + 26px);right:auto;top:var(--y);translate:-10px -50%;visibility:hidden;pointer-events:none;opacity:0;scale:1;filter:none;transition:opacity .3s var(--muot),translate .45s var(--muot),visibility .3s}
+  .hs-the.ben-trai{left:auto;right:calc(100% - var(--x) + 26px);translate:10px -50%}
+  .hs-the.mo{z-index:20;visibility:visible;pointer-events:auto;opacity:1;translate:0 -50%;transition-delay:0s}
+  /* mũi nhỏ chỉ về phía chấm */
+  .hs-the::before{content:"";position:absolute;top:50%;left:-6px;width:12px;height:12px;background:#fff;rotate:45deg;translate:0 -50%}
+  .hs-the.ben-trai::before{left:auto;right:-6px}
+  .hs-the .vach{display:none}
+}
+@media(min-width:760px){
+  .hs-the{left:calc(var(--x) + 34px)}
+  .hs-the.ben-trai{left:auto;right:calc(100% - var(--x) + 34px)}
+}
+
+
+/* ---------- băng chuyền: nền là video của chuỗi đang chọn ---------- */
+.xem2-nen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+
+/* ---------- thời gian tự chạy của ảnh bìa lấy từ cấu hình ---------- */
+.hero2 .cham button.chon i{animation-duration:var(--tg-bia,6.5s)}
+
+
+/* ---------- 9b. khối quảng cáo "Xưởng phối chuỗi 3D" ---------- */
+.xq-khoi{padding:0 0 clamp(64px,9vw,130px)}
+.xq{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:clamp(20px,4vw,60px);border-radius:28px;overflow:hidden;color:#E9E3D6;
+  padding:clamp(34px,5vw,76px) clamp(22px,5vw,76px);background:radial-gradient(90% 120% at 78% 50%,#4A6245 0,#33452F 48%,#222E22 100%)}
+.xq::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(40% 50% at 76% 46%,rgba(255,244,214,.2),transparent 70%)}
+.xq-chu{position:relative;z-index:2}
+.xq .nhan{color:#FBD2B0;margin:0 0 18px}
+.xq h2{color:#fff;font-size:clamp(2.2rem,4.600vw,4rem);line-height:1.08;margin:0}
+.xq h2 em{color:#DCEEDD}
+.xq-mo{margin:20px 0 0;max-width:44ch;color:rgba(255,255,255,.78)}
+.xq-buoc{list-style:none;margin:30px 0 34px;padding:0;display:grid;gap:0;max-width:440px}
+.xq-buoc li{display:grid;grid-template-columns:54px 1fr auto;align-items:baseline;gap:6px;padding:14px 0;border-top:1px solid rgba(255,255,255,.14);transition-delay:calc(var(--i,0)*.08s)}
+.xq-buoc li:last-child{border-bottom:1px solid rgba(255,255,255,.14)}
+.xq-buoc i{font:italic 400 1.4rem/1 var(--serif);color:#FBD2B0}
+.xq-buoc b{font-weight:500;color:#fff}
+.xq-buoc span{font-size:.8rem;color:rgba(255,255,255,.55);text-align:right}
+.xq-nut{background:#FFFDF8;color:var(--muc)}
+.xq-nut span{transition:translate .35s var(--nhay)}
+.xq-nut:hover{background:var(--dao);color:#fff}
+.xq-nut:hover span{translate:5px 0}
+.xq-san{position:relative;z-index:2;display:block;aspect-ratio:1;max-width:560px;width:100%;justify-self:center}
+.xq-san svg{width:100%;height:100%;display:block;overflow:visible;transition:rotate 1.2s var(--nhay),scale 1.2s var(--nhay)}
+.xq-san:hover svg{rotate:-6deg;scale:1.03}
+.xq-quy{fill:none;stroke:rgba(255,255,255,.14);stroke-dasharray:2 9;transform-box:fill-box;transform-origin:center;animation:xq-quay 60s linear infinite}
+.xq-quy.q2{animation-direction:reverse;animation-duration:44s;stroke-dasharray:1 7}
+@keyframes xq-quay{to{rotate:360deg}}
+.xq-hat{opacity:0}
+.xq-san.ra .xq-hat{animation:xq-hat .6s var(--nhay) both;animation-delay:calc(var(--i)*26ms)}
+@keyframes xq-hat{from{opacity:0;scale:.2}to{opacity:1;scale:1}}
+.xq-hat circle{filter:drop-shadow(0 4px 5px rgba(0,0,0,.3))}
+.xq-charm{opacity:0;filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))}
+.xq-san.ra .xq-charm{animation:xq-roi .9s cubic-bezier(.34,1.56,.64,1) both,xq-dua 3.6s ease-in-out infinite;animation-delay:calc(.9s + var(--n)*.22s),calc(1.8s + var(--n)*.22s)}
+@keyframes xq-roi{from{opacity:0;translate:0 -46px}to{opacity:1;translate:0 0}}
+@keyframes xq-dua{0%,100%{rotate:-5deg}50%{rotate:5deg}}
+.xq-the{position:absolute;z-index:3;display:flex;flex-direction:column;gap:1px;padding:11px 16px;border-radius:14px;background:rgba(255,253,248,.12);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.18);color:#fff;opacity:0;animation:xq-noi 5s ease-in-out infinite}
+.xq-san.ra .xq-the{opacity:1;transition:opacity .8s 1.6s}
+.xq-the small{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.xq-the b{font-weight:500;font-size:.86rem;white-space:nowrap}
+.xq-the.t1{left:-2%;top:10%}
+.xq-the.t2{right:-2%;top:24%;animation-delay:-1.6s}
+.xq-the.t3{left:2%;bottom:16%;flex-direction:row;align-items:center;gap:9px;animation-delay:-3.2s}
+.xq-the.t3 i{width:22px;height:22px;border-radius:50%;background:var(--dao);display:grid;place-items:center;font-style:normal;line-height:1}
+@keyframes xq-noi{50%{translate:0 -9px}}
+.xq-xoay{position:absolute;left:0;right:0;bottom:-5%;text-align:center;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+@media(max-width:900px){
+  .xq{grid-template-columns:1fr;border-radius:20px}
+  .xq-san{order:-1;max-width:400px}
+  .xq-the b{font-size:.76rem}
+  .xq-buoc span{display:none}
+  .xq-buoc li{grid-template-columns:48px 1fr}
+}
+@media(prefers-reduced-motion:reduce){.xq-quy,.xq-the,.xq-san.ra .xq-charm{animation-duration:.01s;animation-iteration-count:1}}

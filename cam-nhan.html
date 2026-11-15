@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cảm nhận khách hàng · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=261115154349">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261115154349">
+<link rel="stylesheet" href="css/dau.css?v=261115154349">
+<link rel="stylesheet" href="css/trang.css?v=261115154349">
+</head>
+<body>
+<div id="dau"></div>
+
+<main>
+<div class="bb tr-dau"><p class="nhan">Khách nói gì</p><h1>Cảm nhận <em>khách hàng</em></h1><p class="tr-mo">Chỉ đăng cảm nhận thật của khách đã mua.</p></div><div class="bb" style="padding-bottom:clamp(70px,9vw,120px)"><div id="cn"></div></div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js?v=261115154349"></script>
+<script src="js/hieu-ung.js?v=261115154349"></script>
+<script src="js/dau.js?v=261115154349"></script>
+<script src="js/khach.js?v=261115154349"></script>
+<script>
+khoiDong(function(){var L=CH.lienHe||{}; $$('[data-zalo]').forEach(function(a){a.href='https://zalo.me/'+(L.zalo||L.sdt); a.target='_blank'; a.rel='noopener'}); 
+  var ds=CH.camNhan||[];
+  $('#cn').innerHTML=ds.length? '<div class="tr-cn">'+ds.map(function(c){return '<figure class="len"><blockquote>'+e(c.chu||'')+'</blockquote><figcaption>'+e(c.ten||'Khách hàng')+(c.mon?' · '+e(c.mon):'')+'</figcaption></figure>'}).join('')+'</div>'
+    : '<div class="tr-sap"><p class="nhan">Chưa có cảm nhận</p><h2>Trang này đang <em>chờ những dòng đầu tiên</em></h2><p>Jadora không tự viết cảm nhận. Khi có khách gửi nhận xét thật, chúng tôi sẽ đăng ở đây.</p><div class="tr-nut"><a class="nut vien" href="san-pham.html">Xem sản phẩm</a></div></div>';});
+</script>
+</body>
+</html>

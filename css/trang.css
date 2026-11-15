@@ -1,0 +1,92 @@
+/* ===== Khung chung cho các trang nội dung (hướng dẫn, chính sách, bộ sưu tập…) ===== */
+.tr-dau{padding:clamp(34px,5vw,70px) 0 clamp(26px,3.500vw,46px);max-width:none}
+.tr-dau .nhan{margin:0 0 14px}
+.tr-dau h1{font-size:clamp(2.6rem,6vw,4.4rem);line-height:1.08}
+.tr-mo{margin:20px 0 0;max-width:60ch;font-size:1.08rem;color:var(--than)}
+
+/* hai cột: mục lục bên trái, nội dung bên phải */
+.tr-hai{display:grid;grid-template-columns:230px minmax(0,1fr);gap:clamp(30px,6vw,90px);align-items:start;padding-bottom:clamp(70px,9vw,120px)}
+.tr-ben{position:sticky;top:calc(var(--cao-dau,85px) + 24px);display:grid;gap:26px;font-size:.92rem}
+.tr-ben b{display:block;font-weight:400;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--nhat);margin-bottom:10px}
+.tr-ben a{display:block;padding:6px 0 6px 14px;border-left:1px solid var(--vien);color:var(--than);transition:color .3s,border-color .3s}
+.tr-ben a:hover{color:var(--reu)}
+.tr-ben a.chon{color:var(--muc);border-left-color:var(--reu)}
+
+/* nội dung */
+.tr-than{max-width:760px}
+.tr-than>section{padding:0 0 38px;margin-bottom:38px;border-bottom:1px solid var(--vien)}
+.tr-than>section:last-child{border-bottom:0;margin-bottom:0}
+.tr-than h2{font-size:clamp(1.6rem,2.800vw,2.200rem);margin-bottom:18px}
+.tr-than h3{font-size:1.25rem;margin:22px 0 10px}
+.tr-than p{margin:0 0 14px}
+.tr-than ul,.tr-than ol{margin:0 0 14px;padding-left:20px;display:grid;gap:9px}
+.tr-than li::marker{color:var(--reu)}
+.tr-than a:not(.nut){color:var(--muc);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--vien-dam)}
+.tr-than a:not(.nut):hover{color:var(--reu)}
+.tr-nut{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+
+/* ghi chú "đang soạn" và "bản nháp" */
+.tr-cho{display:flex;gap:14px;align-items:flex-start;background:var(--kem2);border-radius:14px;padding:22px 24px;margin:0 0 30px;font-size:.95rem}
+.tr-cho::before{content:"";flex:none;width:9px;height:9px;margin-top:.5em;border-radius:999px;background:var(--cam,#F59178);box-shadow:0 0 0 5px rgba(245,145,120,.2)}
+.tr-cho b{display:block;font-weight:500;color:var(--muc);margin-bottom:2px}
+
+/* các bước đánh số */
+.tr-buoc{list-style:none;padding:0;margin:0;display:grid;gap:22px;counter-reset:b}
+.tr-buoc li{counter-increment:b;display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start}
+.tr-buoc li::before{content:counter(b,decimal-leading-zero);font-family:var(--serif);font-size:2.200rem;line-height:1;color:var(--reu);opacity:.6}
+.tr-buoc b{display:block;font-family:var(--serif);font-weight:500;font-size:1.2rem;color:var(--muc);margin-bottom:4px}
+
+/* ô lớn "sắp ra mắt" */
+.tr-sap{background:var(--toi);color:#D9D0C3;border-radius:16px;padding:clamp(34px,6vw,80px);text-align:center;margin-bottom:clamp(40px,6vw,80px)}
+.tr-sap .nhan{color:rgba(255,255,255,.6)}
+.tr-sap h2{color:#fff;font-size:clamp(2rem,4.500vw,3.400rem);margin-bottom:16px}
+.tr-sap p{max-width:52ch;margin:0 auto 26px;color:rgba(255,255,255,.75)}
+.tr-sap .nut.vien{color:#fff}
+.tr-sap .nut.vien:hover{background:#fff;color:var(--toi);border-color:#fff}
+.tr-sap .tr-nut{justify-content:center}
+
+/* bộ sưu tập: ảnh bìa + lưới */
+.bst-bia{position:relative;min-height:min(62vh,560px);display:flex;align-items:flex-end;color:#fff;overflow:hidden;background:var(--toi)}
+.bst-bia>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:troi-bia 14s linear both}
+.bst-bia::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(30,26,22,.15),rgba(30,26,22,.7))}
+.bst-bia .bb{position:relative;z-index:2;width:100%;padding-top:60px;padding-bottom:clamp(30px,4vw,56px)}
+.bst-bia .nhan{color:rgba(255,255,255,.8)}
+.bst-bia h1{color:#fff;font-size:clamp(2.6rem,6vw,4.600rem)}
+.bst-bia p{margin:14px 0 0;max-width:56ch;color:rgba(255,255,255,.88)}
+.bst-thanh{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:26px 0 22px}
+.bst-dong{display:flex;flex-wrap:wrap;gap:8px}
+.bst-dong a{padding:9px 18px;border-radius:999px;border:1px solid var(--vien);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--than);transition:.3s}
+.bst-dong a:hover{border-color:var(--muc);color:var(--muc)}
+.bst-dong a.chon{background:var(--muc);border-color:var(--muc);color:var(--kem)}
+
+/* quà tặng: các mức giá */
+.qt-muc{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:30px}
+.qt-muc button{background:var(--kem2);border-radius:14px;padding:22px 20px;text-align:left;transition:background .3s,color .3s}
+.qt-muc button b{display:block;font-family:var(--serif);font-weight:500;font-size:1.300rem;color:var(--muc);transition:color .3s}
+.qt-muc button span{font-size:.82rem;color:var(--nhat);transition:color .3s}
+.qt-muc button.chon{background:var(--reu)}
+.qt-muc button.chon b,.qt-muc button.chon span{color:#fff}
+
+/* tra cứu đơn */
+.tc-form{display:flex;gap:10px;max-width:520px;margin-bottom:26px}
+.tc-form input{flex:1;min-width:0;border:1px solid var(--vien);border-radius:999px;padding:13px 20px;font:inherit;background:var(--kem);color:var(--muc);outline:none;text-transform:uppercase}
+.tc-form input:focus{border-color:var(--reu)}
+
+/* 404 */
+.tr-404{text-align:center;padding:clamp(60px,10vw,140px) 0}
+.tr-404 b{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(5rem,16vw,11rem);line-height:1;color:var(--reu);opacity:.5}
+.tr-404 h1{font-size:clamp(1.8rem,3.600vw,2.800rem);margin:10px 0 14px}
+.tr-404 p{color:var(--nhat);margin:0 0 26px}
+.tr-404 .tr-nut{justify-content:center}
+
+@media(max-width:900px){
+  .tr-hai{grid-template-columns:1fr}
+  .tr-ben{position:static;grid-template-columns:1fr 1fr;gap:20px;order:2;padding-top:30px;border-top:1px solid var(--vien)}
+  .qt-muc{grid-template-columns:1fr 1fr}
+}
+
+/* cảm nhận khách hàng */
+.tr-cn{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.tr-cn figure{margin:0;background:var(--kem2);border-radius:16px;padding:26px}
+.tr-cn blockquote{margin:0 0 14px;font:400 1.15rem/1.5 var(--serif);color:var(--muc)}
+.tr-cn figcaption{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--nhat)}

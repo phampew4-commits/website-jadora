@@ -97,14 +97,16 @@ function veChan(){
     '<div class="chan-luoi">'+
       '<div><a class="logo" href="index.html">'+e(T.ten||'Jadora')+'</a><p>'+e(T.moTaNgan||'')+'</p>'+
         '<div class="xh">'+xh.map(function(s){return '<a href="'+e(s[1])+'" target="_blank" rel="noopener" aria-label="'+s[0]+'">'+s[2]+'</a>'}).join('')+'</div></div>'+
-      '<div><h4>Cửa hàng</h4><ul>'+THU_TU.map(function(k){return '<li><a href="san-pham.html?loai='+k+'">'+LOAI[k].ten+'</a></li>'}).join('')+'</ul></div>'+
-      '<div><h4>Hỗ trợ</h4><ul><li><a href="gioi-thieu.html">Câu chuyện</a></li><li><a href="lien-he.html">Liên hệ</a></li><li><a href="lien-he.html#giao">Giao hàng</a></li><li><a href="lien-he.html#doi">Đổi trả</a></li></ul></div>'+
-      '<div><h4>Liên hệ</h4><ul>'+
+      '<div><h4>Cửa hàng</h4><ul>'+THU_TU.filter(function(k){return DS.some(function(x){return x.loai===k})}).map(function(k){return '<li><a href="bo-suu-tap.html?loai='+k+'">'+LOAI[k].ten+'</a></li>'}).join('')+
+        '<li><a href="tu-thiet-ke.html">Tự thiết kế chuỗi</a></li><li><a href="qua-tang.html">Quà tặng</a></li></ul></div>'+
+      '<div><h4>Hướng dẫn</h4><ul><li><a href="do-co-tay.html">Đo cỡ tay &amp; cỡ nhẫn</a></li><li><a href="bao-quan.html">Bảo quản ngọc</a></li><li><a href="kien-thuc.html">Kiến thức về ngọc</a></li><li><a href="hoi-dap.html">Hỏi đáp</a></li><li><a href="cam-nhan.html">Cảm nhận khách hàng</a></li></ul></div>'+
+      '<div><h4>Hỗ trợ</h4><ul><li><a href="giao-hang.html">Giao hàng &amp; thanh toán</a></li><li><a href="doi-tra.html">Đổi trả &amp; bảo hành</a></li><li><a href="tra-cuu-don.html">Tra cứu đơn hàng</a></li><li><a href="bao-mat.html">Chính sách bảo mật</a></li><li><a href="dieu-khoan.html">Điều khoản sử dụng</a></li></ul></div>'+
+      '<div><h4>Liên hệ</h4><ul><li><a href="gioi-thieu.html">Câu chuyện</a></li><li><a href="thu-cong.html">Đồ thủ công</a></li>'+
         '<li><a href="tel:'+e(L.sdt)+'">'+e(L.sdt)+'</a></li>'+
         '<li><a href="'+e(L.banDo||'#')+'" target="_blank" rel="noopener">'+e(L.diaChi||'')+'</a></li>'+
         '<li>'+e(L.gio||'')+'</li></ul></div>'+
     '</div>'+
-    '<div class="chan-cuoi"><span>&copy; '+new Date().getFullYear()+' '+e(T.ten||'Jadora')+'. Bản thử nghiệm.</span><span>Ảnh và giá là của đúng món bạn nhận</span></div>'+
+    '<div class="chan-cuoi"><span>&copy; '+new Date().getFullYear()+' '+e(T.ten||'Jadora')+'. '+e((CH.chanTrang||{}).banQuyen||'')+'</span><span>'+e((CH.chanTrang||{}).ghiChu||'')+'</span></div>'+
   '</div></footer>';
 }
 
@@ -114,19 +116,24 @@ function theoDoiLen(){
   $$('.len').forEach(function(el){io.observe(el)});
 }
 
+/* ---------- hiệu ứng vào trang: thêm lớp 'vao' khi nội dung đã vẽ xong; sau 1,8 giây thêm 'vao-xong' để phần vẽ lại về sau không chạy lại hiệu ứng ---------- */
+function trangSan(){ var b=document.body; if(window.CH && (CH.tinhNang||{}).hieuUngVaoTrang===false){ b.classList.add('vao','vao-xong'); return } if(b.classList.contains('vao')) return; b.classList.add('vao'); setTimeout(function(){ b.classList.add('vao-xong'); },1800);   /* KHÔNG dùng tên 'xong': trùng lớp .xong của trang xác nhận đơn */ }
+
 /* ---------- khởi động ---------- */
 function khoiDong(cb){
   Promise.all([
     fetch('data/cau-hinh.json',{cache:'no-cache'}).then(function(r){return r.json()}),
     fetch('data/san-pham.json',{cache:'no-cache'}).then(function(r){return r.json()})
   ]).then(function(kq){
-    CH=kq[0]; DS=kq[1].filter(function(x){return x && x.ten});
+    CH=kq[0]; var AN=(CH.an||[]).map(String); /* món ẩn riêng trên Jadora: chọn trong app, mục Sản phẩm */
+    DS=kq[1].filter(function(x){return x && x.ten && AN.indexOf(String(x.ma))<0});
     docGio(); veDau(); veChan();
     if(cb) cb();
-    if(window.cuonMuot) cuonMuot();
+    if(window.cuonMuot && (CH.tinhNang||{}).cuonMuot!==false) cuonMuot();
     theoDoiLen();
+    trangSan();
   }).catch(function(err){
-    console.error(err);
+    console.error(err); trangSan();
     document.body.insertAdjacentHTML('afterbegin','<p style="padding:30px;text-align:center">Không đọc được dữ liệu. Hãy mở web qua máy chủ chứ đừng mở thẳng file.</p>');
   });
 }

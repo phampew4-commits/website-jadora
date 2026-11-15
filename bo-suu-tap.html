@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bộ sưu tập · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=261115154349">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261115154349">
+<link rel="stylesheet" href="css/dau.css?v=261115154349">
+<link rel="stylesheet" href="css/trang.css?v=261115154349">
+</head>
+<body>
+<div id="dau"></div>
+
+<main>
+<section class="bst-bia" id="bst-bia"></section><div class="bb" style="padding-bottom:clamp(70px,9vw,120px)"><div class="bst-thanh"><nav class="bst-dong" id="bst-dong"></nav><select id="bst-xep" class="xep-chon" aria-label="Sắp xếp"><option value="moi">Mới nhất</option><option value="re">Giá thấp trước</option><option value="mac">Giá cao trước</option></select></div><div class="luoi sat" id="bst-luoi"></div><p class="tr-nut" style="justify-content:center;margin-top:34px"><button class="nut vien" id="bst-them" type="button">Xem thêm</button></p></div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js?v=261115154349"></script>
+<script src="js/hieu-ung.js?v=261115154349"></script>
+<script src="js/dau.js?v=261115154349"></script>
+<script src="js/khach.js?v=261115154349"></script>
+<script>
+khoiDong(function(){var L=CH.lienHe||{}; $$('[data-zalo]').forEach(function(a){a.href='https://zalo.me/'+(L.zalo||L.sdt); a.target='_blank'; a.rel='noopener'}); 
+  var MO={chuoi:'Chuỗi ngọc phối charm vàng 18K. Mỗi chuỗi một mã, ảnh của đúng chuỗi bạn nhận.',charm:'Charm vàng 18K và charm ngọc để gắn thêm vào chuỗi.',tron:'Chuỗi ngọc trơn — nền để bạn tự phối charm.',matday:'Mặt dây ngọc.',nhan:'Nhẫn ngọc.',khuyen:'Khuyên tai ngọc.'};
+  var co=THU_TU.filter(function(k){return DS.some(function(x){return x.loai===k})}), k=new URLSearchParams(location.search).get('loai'); if(co.indexOf(k)<0) k=co[0];
+  var ds=DS.filter(function(x){return x.loai===k}), hien=0, xep='moi';
+  document.title=LOAI[k].ten+' · Jadora';
+  var bia=ds.filter(function(x){return x.anh&&x.anh.length})[0];
+  $('#bst-bia').innerHTML=(bia?'<img src="'+anh(bia.anh[1]||bia.anh[0],1600)+'" alt="" referrerpolicy="no-referrer">':'')+'<div class="bb"><p class="nhan">Bộ sưu tập · '+ds.length+' món</p><h1>'+e(LOAI[k].ten)+'</h1><p>'+e(MO[k]||'')+'</p></div>';
+  $('#bst-dong').innerHTML=co.map(function(c){return '<a'+(c===k?' class="chon"':'')+' href="bo-suu-tap.html?loai='+c+'">'+LOAI[c].ngan+'</a>'}).join('')+(k==='chuoi'||k==='tron'||k==='charm'?'<a href="tu-thiet-ke.html">Tự thiết kế →</a>':'');
+  function ve(lai){ var r=ds.slice(); if(xep==='re') r.sort(function(a,b){return a.gia-b.gia}); else if(xep==='mac') r.sort(function(a,b){return b.gia-a.gia}); else r.sort(function(a,b){return ngaySo(b.ngay)-ngaySo(a.ngay)});
+    if(lai){hien=0; $('#bst-luoi').innerHTML=''} $('#bst-luoi').insertAdjacentHTML('beforeend',r.slice(hien,hien+16).map(theSp).join('')); hien+=16; $('#bst-them').style.display=hien<r.length?'':'none' }
+  $('#bst-xep').onchange=function(){xep=this.value; ve(true)}; $('#bst-them').onclick=function(){ve(false)}; ve(true);});
+</script>
+</body>
+</html>

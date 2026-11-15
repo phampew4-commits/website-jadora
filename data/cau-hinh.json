@@ -6,8 +6,8 @@
     "moTaNgan": "Phỉ thuý tự nhiên và charm vàng 18K, mỗi món được chọn và xâu bằng tay."
   },
   "lienHe": {
-    "sdt": "0888226862",
-    "zalo": "0888226862",
+    "sdt": "0972945194",
+    "zalo": "0972945194",
     "zaloOA": "",
     "messenger": "ngoctramstore.bn",
     "instagram": "https://www.instagram.com/ngc.trm.store/",
@@ -135,21 +135,24 @@
         "charm": "19801",
         "x": 63.9,
         "y": 36.2,
-        "ym": 36.8
+        "ym": 36.8,
+        "ben": "phai"
       },
       {
         "ten": "Charm lu đính đá vàng 18K",
         "charm": "",
         "x": 52.2,
         "y": 43.7,
-        "ym": 41.8
+        "ym": 41.8,
+        "ben": "trai"
       },
       {
         "ten": "Charm hồ điệp phỉ thuý lam băng vàng 18K",
         "charm": "25776",
         "x": 46.7,
         "y": 67.8,
-        "ym": 57.9
+        "ym": 57.9,
+        "ben": "phai"
       }
     ]
   },
@@ -193,5 +196,70 @@
     "authDomain": "braided-upgrade-476102-g7.firebaseapp.com",
     "projectId": "braided-upgrade-476102-g7"
   },
-  "camNhan": []
+  "camNhan": [],
+  "truot": {
+    "anhBia": 6.5,
+    "monMoiVe": 5,
+    "bangChuyen": 7,
+    "timMon": 6,
+    "cauNoi": 6.5
+  },
+  "thietKe": {
+    "toiDaCharm": 12,
+    "vongGia": 3,
+    "luuY": ""
+  },
+  "an": [],
+  "seo": {
+    "tieuDe": "Jadora — Ngọc phỉ thuý & đồ thủ công",
+    "moTa": "Phỉ thuý tự nhiên và charm vàng 18K, mỗi món được chọn và xâu bằng tay."
+  },
+  "trangChu": {
+    "an": []
+  },
+  "datHang": {
+    "cod": true,
+    "chuCod": "Mở hộp kiểm tra trước khi thanh toán.",
+    "chuyenKhoan": true,
+    "chuChuyenKhoan": "Cửa hàng xác nhận và gửi hàng ngay trong ngày."
+  },
+  "tinhNang": {
+    "dangNhapGoogle": true,
+    "videoKhiReChuot": true,
+    "cuonMuot": true,
+    "hieuUngVaoTrang": true
+  },
+  "chanTrang": {
+    "banQuyen": "Bản thử nghiệm.",
+    "ghiChu": "Ảnh và giá là của đúng món bạn nhận"
+  },
+  "chinhSach": {
+    "giao": [
+      "Giao toàn quốc qua Vietnam Post. Nội thành Bắc Ninh có thể giao trong ngày, hoặc bạn ghé lấy tại cửa hàng.",
+      "Miền Bắc 2–3 ngày; miền Trung và miền Nam 3–5 ngày.",
+      "Mỗi món được đóng hộp, chèn chống sốc cẩn thận.",
+      "Trước khi gửi, cửa hàng quay video món hàng để bạn xem lại."
+    ],
+    "phi": [
+      "Các trường hợp khác, phí ship tính theo đơn vị giao hàng."
+    ],
+    "thanhToan": [
+      "Nhận hàng trả tiền (COD): được kiểm tra hàng trước khi thanh toán. Với đơn giá trị cao, cửa hàng xin bạn cọc trước.",
+      "Chuyển khoản: thông tin tài khoản hiện ở bước đặt hàng và được cửa hàng xác nhận lại qua tin nhắn."
+    ],
+    "doi": [
+      "Đổi trong vòng 1 ngày kể từ khi nhận hàng nếu món không đúng mô tả, khác ảnh hoặc bị lỗi do vận chuyển. Cửa hàng chịu phí ship hai chiều.",
+      "Ngoài trường hợp trên, sản phẩm không áp dụng đổi trả."
+    ],
+    "baoHanh": [
+      "Xâu lại dây miễn phí trong 12 tháng khi dây bị giãn hoặc đứt.",
+      "Đánh bóng, làm sạch charm vàng miễn phí 1 lần mỗi năm.",
+      "Không bảo hành ngọc bị nứt, vỡ do va đập hay rơi. Cửa hàng hỗ trợ tư vấn sửa với chi phí ưu đãi.",
+      "Khi cần bảo hành, bạn nhắn Zalo kèm mã sản phẩm."
+    ],
+    "luuY": [
+      "Charm vàng là charm trang sức, không phải vàng tích sản. Khi bán lại sẽ mất giá nhiều so với giá mua, bạn cân nhắc trước khi chọn nhé."
+    ],
+    "banNhap": true
+  }
 }

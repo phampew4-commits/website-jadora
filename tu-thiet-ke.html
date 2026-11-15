@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tự thiết kế chuỗi · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=261115154349">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261115154349">
+<link rel="stylesheet" href="css/dau.css?v=261115154349">
+<link rel="stylesheet" href="css/trang.css?v=261115154349">
+<link rel="stylesheet" href="css/xuong.css?v=261115154349">
+<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js" crossorigin="anonymous">
+</head>
+<body>
+<div id="dau"></div>
+
+<main>
+<div class="xuong" id="tk">
+  <div class="xg-san tk-san">
+    <div class="xg-tren"><p class="nhan">Xưởng phối chuỗi · 3D</p><div class="tab-vong" id="tabVong"></div></div>
+    <div class="san-trong">
+      <svg id="vong" viewBox="0 0 400 400" aria-label="Hình chuỗi đang thiết kế"></svg>
+      <div class="nhan-giua" id="nhanGiua"></div>
+      <div class="bong-charm" id="bongCharm" hidden></div>
+    </div>
+    <div class="cong-cu">
+      <button data-lam="deu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="4" r="1.6" fill="currentColor"/><circle cx="19" cy="15.5" r="1.6" fill="currentColor"/><circle cx="5" cy="15.5" r="1.6" fill="currentColor"/></svg>Xếp đều</button>
+      <button data-lam="gom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="20" r="1.6" fill="currentColor"/><circle cx="8.2" cy="19" r="1.6" fill="currentColor"/><circle cx="15.8" cy="19" r="1.6" fill="currentColor"/></svg>Gom phía trước</button>
+      <button data-lam="xoa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/></svg>Bỏ hết charm</button>
+      <button data-lam="link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></svg>Chép link</button>
+    </div>
+    <p class="goi-y goi-sua">Kéo nền để xoay · bấm charm để chọn · kéo charm để đổi chỗ</p>
+    <p class="goi-y goi-deo">Kéo ngang để xoay tay, xem charm ở mọi phía</p>
+    <div class="tk-thanh" id="thanhTk"></div>
+  </div>
+
+  <div class="xg-bang">
+    <header class="xg-dau"><p class="nhan">Tự thiết kế</p><h1>Phối chuỗi <em>của riêng bạn</em></h1>
+      <p>Bốn bước: chọn dây, chọn số vòng và cỡ tay, gắn charm, rồi gửi thiết kế. Jadora xâu đúng như bạn xếp.</p></header>
+    <nav class="xg-buoc" id="xgBuoc">
+      <button type="button" data-b="1" class="chon"><i>01</i><b>Dây ngọc</b><small id="xg1">chưa chọn</small></button>
+      <button type="button" data-b="2"><i>02</i><b>Vòng &amp; cỡ</b><small id="xg2"></small></button>
+      <button type="button" data-b="3"><i>03</i><b>Charm</b><small id="demCharm">0 charm</small></button>
+      <button type="button" data-b="4"><i>04</i><b>Gửi</b><small id="xg4"></small></button>
+    </nav>
+
+    <section class="xg-o chon" data-b="1"><h2>Chọn <em>dây ngọc</em></h2><p class="xg-ghi">Dây nền quyết định màu và cỡ hạt của cả chuỗi.</p>
+      <div class="ds-day" id="dsDay"></div></section>
+
+    <section class="xg-o" data-b="2"><h2>Số vòng <em>&amp; cỡ tay</em></h2><p class="xg-ghi">Quấn nhiều vòng thì mỗi vòng thiết kế riêng ở thanh phía trên hình.</p>
+      <div class="so-vong" id="soVong"></div>
+      <div class="xg-tay"><span>Cỡ cổ tay</span><b class="gt" id="gtTay">15 cm</b></div>
+      <input type="range" id="coTay" min="12" max="20" step="0.5" value="15" aria-label="Cỡ cổ tay (cm)">
+      <div class="vach"><span>12 cm</span><span>Đo sát cổ tay, cửa hàng cộng thêm độ rộng khi xâu</span><span>20 cm</span></div>
+      <a class="xg-do" href="do-co-tay.html" target="_blank">Cách đo cỡ tay →</a></section>
+
+    <section class="xg-o" data-b="3"><h2>Gắn <em>charm</em></h2><p class="xg-ghi">Bấm một charm để gắn vào vòng đang thiết kế; bấm lần nữa để gắn thêm.</p>
+      <div class="loc-charm">
+        <div class="chip-nhom" id="chipNhom"></div>
+        <div class="tim"><input id="timCharm" type="search" placeholder="Tìm charm…" aria-label="Tìm charm">
+          <select id="xepCharm" aria-label="Sắp xếp"><option value="re">Giá thấp trước</option><option value="mac">Giá cao trước</option></select></div>
+      </div>
+      <div class="ds-charm" id="dsCharm"></div>
+      <div class="them"><button class="nut vien" id="themCharm" type="button">Xem thêm charm</button></div></section>
+
+    <section class="xg-o" data-b="4"><h2>Thiết kế <em>của bạn</em></h2><p class="xg-ghi">Kiểm tra lại rồi gửi cho Jadora qua kênh bạn tiện.</p>
+      <div class="tom-tat" id="tomTat"></div></section>
+
+    <div class="xg-di"><button type="button" class="lui" id="xgLui" hidden>← Quay lại</button><button type="button" class="toi2" id="xgToi">Tiếp tục →</button></div>
+  </div>
+</div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js?v=261115154349"></script>
+<script src="js/hieu-ung.js?v=261115154349"></script>
+<script src="js/dau.js?v=261115154349"></script>
+<script src="js/khach.js?v=261115154349"></script>
+<script>
+var GIAM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+khoiDong(function(){
+  /* bốn bước: mỗi lúc hiện một bước */
+  var b=1;
+  function mo(n){ b=Math.min(4,Math.max(1,n));
+    $$('#xgBuoc button').forEach(function(x){x.classList.toggle('chon',+x.dataset.b===b); x.classList.toggle('roi',+x.dataset.b<b)});
+    $$('.xg-o').forEach(function(x){x.classList.toggle('chon',+x.dataset.b===b)});
+    $('#xgLui').hidden=b===1; $('#xgToi').hidden=b===4;
+    var o=$('.xg-bang'), tren=o.getBoundingClientRect().top+scrollY-(innerWidth>900?parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cao-dau'))||85:0);
+    if(innerWidth>900&&scrollY>tren+140) scrollTo({top:tren,behavior:'smooth'}) }
+  $('#xgBuoc').onclick=function(ev){var x=ev.target.closest('button'); if(x) mo(+x.dataset.b)};
+  $('#xgLui').onclick=function(){mo(b-1)}; $('#xgToi').onclick=function(){mo(b+1)};
+  addEventListener('tk-ve',function(ev){ var d=ev.detail;
+    $('#xg1').textContent=d.day? d.day.ten.replace(/\s*\d+([.,]\d+)? ly/,'') : 'chưa chọn';
+    $('#xg2').textContent=d.vong+' vòng · '+String(d.tay).replace('.',',')+' cm';
+    $('#xg4').textContent=d.day? d.tong : '' });
+  /* nạp bộ máy theo thứ tự (cần cấu hình đã tải xong) */
+  var v=(document.querySelector('script[src*="js/chung.js"]').src.split('?v=')[1]||'1');
+  (function nap(ds){ if(!ds.length) return; var s=document.createElement('script'); s.src='js/tk/'+ds[0]+'?v='+v; s.onload=function(){nap(ds.slice(1))}; document.body.appendChild(s) })
+    (['charm-v3.js','charm-ve.js','thiet-ke.js','charm-3d.min.js','vong-3d.js']);
+});
+</script>
+</body>
+</html>

@@ -20,7 +20,7 @@ var KHACH = { bat: false, user: null, nghe: [] };
   KHACH.moMay = function () {
     if (san) return san;
     var fb = (window.CH || {}).firebase || {};
-    KHACH.bat = !!(fb.apiKey && fb.authDomain && fb.projectId && fb.appId);
+    KHACH.bat = !!(fb.apiKey && fb.authDomain && fb.projectId && fb.appId) && ((window.CH || {}).tinhNang || {}).dangNhapGoogle !== false;
     if (!KHACH.bat) return (san = Promise.resolve(null));
     san = nap(goc + 'app-compat.js').then(function () { return nap(goc + 'auth-compat.js'); }).then(function () {
       firebase.initializeApp({ apiKey: fb.apiKey, authDomain: fb.authDomain, projectId: fb.projectId, appId: fb.appId });

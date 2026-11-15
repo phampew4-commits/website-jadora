@@ -7,9 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=261114103811">
-<link rel="stylesheet" href="css/hieu-ung.css?v=261114103811">
-<link rel="stylesheet" href="css/dau.css?v=261114103811">
+<link rel="stylesheet" href="css/style.css?v=261115154349">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261115154349">
+<link rel="stylesheet" href="css/dau.css?v=261115154349">
 </head>
 <body>
 <div id="dau"></div>
@@ -18,10 +18,10 @@
 
 <div id="chan"></div>
 
-<script src="js/chung.js?v=261114103811"></script>
-<script src="js/hieu-ung.js?v=261114103811"></script>
-<script src="js/dau.js?v=261114103811"></script>
-<script src="js/khach.js?v=261114103811"></script>
+<script src="js/chung.js?v=261115154349"></script>
+<script src="js/hieu-ung.js?v=261115154349"></script>
+<script src="js/dau.js?v=261115154349"></script>
+<script src="js/khach.js?v=261115154349"></script>
 <script>
 var KHOA_DON='jadora_don';
 function taoMa(){var d=new Date();function p(n){return (n<10?'0':'')+n} return 'JD'+p(d.getDate())+p(d.getMonth()+1)+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
@@ -45,8 +45,9 @@ function veForm(){
     '<div class="o"><label for="diaChi">Địa chỉ nhận hàng</label><input id="diaChi" name="diaChi" autocomplete="street-address" placeholder="Số nhà, đường, phường/xã, tỉnh/thành" required></div>'+
     '<div class="o"><label for="ghiChu">Ghi chú (không bắt buộc)</label><textarea id="ghiChu" name="ghiChu" placeholder="Cỡ tay, giờ nhận hàng, lời nhắn…"></textarea></div>'+
     '<div class="o"><label>Cách thanh toán</label><div class="chon-tt">'+
-      '<label><input type="radio" name="tt" value="cod" checked><span><b>Nhận hàng rồi trả tiền (COD)</b><small>Mở hộp kiểm tra trước khi thanh toán.</small></span></label>'+
-      '<label><input type="radio" name="tt" value="ck"><span><b>Chuyển khoản trước</b><small>Cửa hàng xác nhận và gửi hàng ngay trong ngày.</small></span></label>'+
+      (function(){ var D=CH.datHang||{}, co=D.cod!==false, ck=D.chuyenKhoan!==false; if(!co&&!ck) co=true;
+        return (co?'<label><input type="radio" name="tt" value="cod" checked><span><b>Nhận hàng rồi trả tiền (COD)</b><small>'+e(D.chuCod||'')+'</small></span></label>':'')+
+          (ck?'<label><input type="radio" name="tt" value="ck"'+(co?'':' checked')+'><span><b>Chuyển khoản trước</b><small>'+e(D.chuChuyenKhoan||'')+'</small></span></label>':'') })()+
     '</div></div>'+
     '<p class="loi" id="loi" hidden></p>'+
     '<button class="nut dac rong" type="submit">Xác nhận đặt hàng</button>'+

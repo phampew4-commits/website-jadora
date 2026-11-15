@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tra cứu đơn hàng · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=261115154349">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261115154349">
+<link rel="stylesheet" href="css/dau.css?v=261115154349">
+<link rel="stylesheet" href="css/trang.css?v=261115154349">
+</head>
+<body>
+<div id="dau"></div>
+
+<main>
+<div class="bb tr-dau"><p class="nhan">Đơn hàng</p><h1>Tra cứu <em>đơn hàng</em></h1><p class="tr-mo">Nhập mã đơn (dạng JD1511-AB12) bạn nhận được sau khi đặt.</p></div><div class="bb tr-hai"><aside class="tr-ben"><div><b>Hướng dẫn</b><a href="do-co-tay.html">Đo cỡ tay & cỡ nhẫn</a><a href="bao-quan.html">Bảo quản ngọc</a><a href="kien-thuc.html">Kiến thức về ngọc</a><a href="hoi-dap.html">Hỏi đáp</a></div><div><b>Chính sách</b><a href="giao-hang.html">Giao hàng & thanh toán</a><a href="doi-tra.html">Đổi trả & bảo hành</a><a class="chon" href="tra-cuu-don.html">Tra cứu đơn hàng</a><a href="bao-mat.html">Chính sách bảo mật</a><a href="dieu-khoan.html">Điều khoản sử dụng</a></div></aside><div class="tr-than"><form class="tc-form" id="tc"><input name="ma" placeholder="Mã đơn hàng" autocomplete="off" required><button class="nut toi" type="submit">Tra cứu</button></form>
+<div id="tc-kq"></div><div class="tr-cho"><div><b>Bản thử nghiệm</b>Hiện web mới tra được các đơn đặt trên chính thiết bị này. Đơn đặt ở máy khác, bạn nhắn mã đơn cho Jadora để được báo tình trạng.</div></div><div class="tr-nut"><a class="nut toi" data-zalo href="lien-he.html">Nhắn Zalo</a><a class="nut vien" href="lien-he.html">Các kênh liên hệ</a></div></div></div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js?v=261115154349"></script>
+<script src="js/hieu-ung.js?v=261115154349"></script>
+<script src="js/dau.js?v=261115154349"></script>
+<script src="js/khach.js?v=261115154349"></script>
+<script>
+khoiDong(function(){var L=CH.lienHe||{}; $$('[data-zalo]').forEach(function(a){a.href='https://zalo.me/'+(L.zalo||L.sdt); a.target='_blank'; a.rel='noopener'}); 
+  function tim(ma){ var don=[]; try{don=JSON.parse(localStorage.getItem('jadora_don'))||[]}catch(x){}
+    var d=don.filter(function(x){return x.ma.toUpperCase()===ma.toUpperCase().trim()})[0];
+    $('#tc-kq').innerHTML=d? '<div class="tk-don"><b>'+e(d.ma)+'</b><small>Đặt ngày '+new Date(d.luc).toLocaleDateString('vi-VN')+' · '+e(d.ten)+'</small><ul>'+d.mon.map(function(m){return '<li>'+e(m.ten)+' × '+m.sl+'</li>'}).join('')+'</ul><div class="tong"><span>'+(d.tt==='ck'?'Chuyển khoản':'Nhận hàng trả tiền')+'</span><span>'+gia(d.tong)+'</span></div></div><p>Cửa hàng xác nhận và báo tình trạng giao qua Zalo/điện thoại bạn đã để lại.</p>'
+      : '<p>Không thấy đơn <b>'+e(ma)+'</b> trên thiết bị này.</p>' }
+  $('#tc').onsubmit=function(ev){ev.preventDefault(); tim(this.ma.value)};
+  var q=new URLSearchParams(location.search).get('ma'); if(q){$('#tc').ma.value=q; tim(q)}});
+</script>
+</body>
+</html>

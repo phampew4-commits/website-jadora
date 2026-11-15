@@ -221,3 +221,104 @@ h1,h2,h3{text-wrap:balance}
 
 /* ---- ảnh bìa: khi đổi tấm, chữ của tấm cũ tắt nhanh để không chồng lên chữ mới ---- */
 .hero2 .tam:not(.hien) .nhan,.hero2 .tam:not(.hien) h1,.hero2 .tam:not(.hien) .nut{opacity:0;transition:opacity .25s}
+
+
+/* ---- nút về đầu trang ---- */
+.len-dau{position:fixed;right:22px;bottom:22px;z-index:45;width:48px;height:48px;border-radius:999px;background:rgba(255,253,248,.94);backdrop-filter:blur(6px);box-shadow:0 8px 24px -8px rgba(42,38,34,.35);opacity:0;visibility:hidden;translate:0 14px;transition:opacity .35s,translate .45s var(--nhay),visibility .35s,bottom .35s var(--nhay),background .3s;padding:0}
+.len-dau.hien{opacity:1;visibility:visible;translate:0 0}
+.len-dau svg{width:48px;height:48px;display:block;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.len-dau .nen{stroke:var(--vien);stroke-width:1.5}
+.len-dau .vong{stroke:var(--reu);stroke-width:1.5;stroke-dasharray:100;stroke-dashoffset:100;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset .15s linear}
+.len-dau path{stroke:var(--muc);stroke-width:1.6;transition:translate .35s var(--nhay),stroke .3s}
+.len-dau:hover{background:var(--reu)}
+.len-dau:hover path{stroke:#fff;translate:0 -2px}
+.len-dau:hover .nen{stroke:transparent}
+.len-dau:hover .vong{stroke:rgba(255,255,255,.7)}
+/* trang chi tiết: nhường chỗ cho thanh mua dính đáy */
+body:has(.ct-dinh.hien) .len-dau{bottom:86px}
+/* đang mở giỏ hoặc menu điện thoại thì ẩn */
+html.khoa-cuon .len-dau{opacity:0;visibility:hidden}
+@media(max-width:760px){.len-dau{right:14px;bottom:14px;width:44px;height:44px}.len-dau svg{width:44px;height:44px}body:has(.ct-dinh.hien) .len-dau{bottom:78px}}
+
+/* ---- mũi tên trong nút tròn: vẽ bằng hình thay cho ký tự chữ, để luôn nằm đúng giữa nút ---- */
+.mt,.tim-dieu button{font-size:0;line-height:0}
+.mt::before,.tim-dieu button::before{content:"";display:block;width:18px;height:18px;margin:auto;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12h15M13.5 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12h15M13.5 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat}
+.mt-truoc::before,.mt[data-d="-1"]::before,.tim-dieu button[data-d="-1"]::before{rotate:180deg}
+.tim-dieu button{display:grid;place-items:center}
+
+/* ===== Hiệu ứng khi trang xuất hiện ===== */
+/* 1. chuyển trang: trang cũ mờ đi, trang mới mờ vào (trình duyệt chưa hỗ trợ thì bỏ qua, không ảnh hưởng) */
+@view-transition{navigation:auto}
+@keyframes vt-ra{to{opacity:0}}
+@keyframes vt-vao{from{opacity:0}}
+::view-transition-old(root){animation:vt-ra .22s ease both}
+::view-transition-new(root){animation:vt-vao .42s ease .04s both}
+
+/* 2. nội dung chờ dữ liệu xong rồi mới hiện, để không nháy trang trắng rồi mới ra chữ */
+main,#ct,.hero2 .tam,.cam-ket{opacity:0}
+body.vao main,body.vao #ct,body.vao .cam-ket{opacity:1}
+body.vao .hero2 .tam.hien{opacity:1}
+body.vao .hero2 .tam:not(.hien){opacity:0}
+
+/* 3. từng khối trồi lên lần lượt */
+@keyframes trang-vao{from{opacity:0;translate:0 26px}to{opacity:1;translate:0 0}}
+@keyframes tieu-de-vao{from{clip-path:inset(0 0 100% 0);translate:0 46%}to{clip-path:inset(-20% 0 -20% 0);translate:0 0}}
+@keyframes tu-trai{from{opacity:0;translate:-28px 0;scale:.985}to{opacity:1;translate:0 0;scale:1}}
+@keyframes bia-vao{from{opacity:0;scale:1.06}to{opacity:1;scale:1}}
+body.vao:not(.vao-xong) main>.bb>*,body.vao:not(.vao-xong) main>section,body.vao:not(.vao-xong) main>.bb>#ct>*{animation:trang-vao .9s var(--nhay) both}
+body.vao:not(.vao-xong) main>.bb>*:nth-child(2){animation-delay:.1s}
+body.vao:not(.vao-xong) main>.bb>*:nth-child(3){animation-delay:.18s}
+body.vao:not(.vao-xong) main>.bb>*:nth-child(4){animation-delay:.26s}
+body.vao:not(.vao-xong) main>.bb>*:nth-child(n+5){animation-delay:.34s}
+body.vao:not(.vao-xong) .trang-dau h1{animation:tieu-de-vao 1.1s var(--nhay) both}
+body.vao:not(.vao-xong) .trang-dau p{animation:trang-vao .9s var(--nhay) .25s both}
+/* trang sản phẩm: thẻ hiện lần lượt */
+body.vao:not(.vao-xong) .luoi.sat>.sp{animation:trang-vao .8s var(--nhay) both;animation-timeline:auto;animation-delay:calc(.2s + var(--tt,0)*45ms)}
+.luoi.sat>.sp:nth-child(1){--tt:0}.luoi.sat>.sp:nth-child(2){--tt:1}.luoi.sat>.sp:nth-child(3){--tt:2}.luoi.sat>.sp:nth-child(4){--tt:3}
+.luoi.sat>.sp:nth-child(5){--tt:4}.luoi.sat>.sp:nth-child(6){--tt:5}.luoi.sat>.sp:nth-child(7){--tt:6}.luoi.sat>.sp:nth-child(8){--tt:7}
+.luoi.sat>.sp:nth-child(n+9){--tt:8}
+/* trang chi tiết: ảnh trượt từ trái, thông tin trồi từng dòng */
+body.vao:not(.vao-xong) .ct2{animation:none}
+body.vao:not(.vao-xong) .ct2-anh{animation:tu-trai 1s var(--nhay) both}
+body.vao:not(.vao-xong) .ct2-dinh>*{animation:trang-vao .8s var(--nhay) both}
+body.vao:not(.vao-xong) .ct2-dinh>*:nth-child(1){animation-delay:.1s}
+body.vao:not(.vao-xong) .ct2-dinh>*:nth-child(2){animation-delay:.16s}
+body.vao:not(.vao-xong) .ct2-dinh>*:nth-child(3){animation-delay:.22s}
+body.vao:not(.vao-xong) .ct2-dinh>*:nth-child(4){animation-delay:.28s}
+body.vao:not(.vao-xong) .ct2-dinh>*:nth-child(5){animation-delay:.34s}
+body.vao:not(.vao-xong) .ct2-dinh>*:nth-child(6){animation-delay:.4s}
+body.vao:not(.vao-xong) .ct2-dinh>*:nth-child(n+7){animation-delay:.46s}
+/* trang chủ: ảnh bìa mờ vào và thu về đúng cỡ, thanh cam kết trồi lên */
+body.vao:not(.vao-xong) .hero2 .tam.hien .nen-bia{animation:bia-vao 1.4s var(--nhay) both}
+body.vao:not(.vao-xong) .cam-ket li{animation:trang-vao .8s var(--nhay) both}
+body.vao:not(.vao-xong) .cam-ket li:nth-child(2){animation-delay:.08s}
+body.vao:not(.vao-xong) .cam-ket li:nth-child(3){animation-delay:.16s}
+body.vao:not(.vao-xong) .cam-ket li:nth-child(4){animation-delay:.24s}
+/* thanh trên cùng: lần đầu vào web thì trượt xuống; chuyển trang thì đứng yên (đã có sẵn) */
+@keyframes dau-vao{from{translate:0 -100%;opacity:0}to{translate:0 0;opacity:1}}
+#dau:not(.tam) .tb,#dau:not(.tam) .dau2{animation:dau-vao .7s var(--nhay) both}
+#dau.da-co .tb,#dau.da-co .dau2{animation:none}
+@media(prefers-reduced-motion:reduce){
+  body.vao:not(.vao-xong) *{animation:none!important}
+  ::view-transition-old(root),::view-transition-new(root){animation:none}
+}
+
+/* mũi tên luôn ở đúng tâm nút trên mọi trình duyệt (Safari không căn giữa bằng lưới trong nút bấm) */
+.tim-dieu button{position:relative}
+.mt::before,.tim-dieu button::before{position:absolute;left:50%;top:50%;margin:0;translate:-50% -50%}
+
+/* video khi rê chuột: quy tắc hiện phải mạnh hơn quy tắc ẩn mặc định */
+.sp.co-video .sp-anh video.re,.sp2.co-video .sp2-anh>a video.re{opacity:1}
+
+
+/* ---- khối "Tìm món của bạn": rê chuột vào ảnh thì chạy video (nếu có) hoặc đổi sang ảnh thứ hai ---- */
+.tim-mon .hinh{position:relative;display:block}
+.tim-mon .hinh img{transition:transform .9s var(--nhay)}
+.tim-mon .hinh:hover img{transform:scale(1.04)}
+.tim-mon .hinh .sau{position:absolute;inset:0;opacity:0;transition:opacity .55s}
+.tim-mon .hinh .sau img{width:100%;height:100%;object-fit:cover}
+.tim-mon .hinh:hover .sau{opacity:1}
+.tim-mon .hinh video.re{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s;z-index:1;pointer-events:none}
+.tim-mon .hinh.co-video video.re{opacity:1}

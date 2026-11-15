@@ -319,3 +319,6 @@ details[open] .noi li:nth-child(3){animation-delay:.18s}
 details[open] .noi li:nth-child(4){animation-delay:.24s}
 details[open] .noi li:nth-child(n+5){animation-delay:.3s}
 @media(prefers-reduced-motion:reduce){details[open] .noi li{animation:none}}
+
+/* chân trang 5 cột (thêm cột Hướng dẫn) */
+@media(min-width:1025px){.chan-luoi{grid-template-columns:1.5fr 1fr 1fr 1fr 1.1fr;gap:34px}}

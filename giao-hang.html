@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Giao hàng & thanh toán · Jadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Be+Vietnam+Pro:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=261115154349">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261115154349">
+<link rel="stylesheet" href="css/dau.css?v=261115154349">
+<link rel="stylesheet" href="css/trang.css?v=261115154349">
+</head>
+<body>
+<div id="dau"></div>
+
+<main>
+<div class="bb tr-dau"><p class="nhan">Chính sách</p><h1>Giao hàng &amp; <em>thanh toán</em></h1><p class="tr-mo">Mỗi món được quay video trước khi gửi và bạn được mở hộp kiểm tra khi nhận.</p></div><div class="bb tr-hai"><aside class="tr-ben"><div><b>Hướng dẫn</b><a href="do-co-tay.html">Đo cỡ tay & cỡ nhẫn</a><a href="bao-quan.html">Bảo quản ngọc</a><a href="kien-thuc.html">Kiến thức về ngọc</a><a href="hoi-dap.html">Hỏi đáp</a></div><div><b>Chính sách</b><a class="chon" href="giao-hang.html">Giao hàng & thanh toán</a><a href="doi-tra.html">Đổi trả & bảo hành</a><a href="tra-cuu-don.html">Tra cứu đơn hàng</a><a href="bao-mat.html">Chính sách bảo mật</a><a href="dieu-khoan.html">Điều khoản sử dụng</a></div></aside><div class="tr-than"><div class="tr-cho"><div><b>Bản nháp</b>Nội dung lấy từ chính sách đang dùng ở cửa hàng, chờ duyệt lại cho Jadora.</div></div>
+<section class="len"><h2>Giao hàng</h2><ul data-cs="giao">
+  <li>Giao toàn quốc qua Vietnam Post. Nội thành Bắc Ninh có thể giao trong ngày, hoặc bạn ghé lấy tại cửa hàng.</li>
+  <li>Miền Bắc 2–3 ngày; miền Trung và miền Nam 3–5 ngày.</li>
+  <li>Mỗi món được đóng hộp, chèn chống sốc cẩn thận.</li>
+  <li>Trước khi gửi, cửa hàng quay video món hàng để bạn xem lại.</li>
+</ul></section>
+<section class="len"><h2>Phí giao hàng</h2><ul>
+  <li id="ghi-ship">Miễn phí giao hàng khi chuyển khoản trước toàn bộ và hoá đơn trên 1.500.000đ.</li>
+</ul><ul data-cs="phi"><li>Các trường hợp khác, phí ship tính theo đơn vị giao hàng.</li></ul></section>
+<section class="len"><h2>Thanh toán</h2><ul data-cs="thanhToan">
+  <li><b>Nhận hàng trả tiền (COD):</b> được kiểm tra hàng trước khi thanh toán. Với đơn giá trị cao, cửa hàng xin bạn cọc trước.</li>
+  <li><b>Chuyển khoản:</b> thông tin tài khoản hiện ở bước đặt hàng và được cửa hàng xác nhận lại qua tin nhắn.</li>
+</ul><div class="tr-nut"><a class="nut toi" data-zalo href="lien-he.html">Nhắn Zalo</a><a class="nut vien" href="lien-he.html">Các kênh liên hệ</a></div></section></div></div>
+</main>
+
+<div id="chan"></div>
+
+<script src="js/chung.js?v=261115154349"></script>
+<script src="js/hieu-ung.js?v=261115154349"></script>
+<script src="js/dau.js?v=261115154349"></script>
+<script src="js/khach.js?v=261115154349"></script>
+<script>
+khoiDong(function(){var L=CH.lienHe||{}; $$('[data-zalo]').forEach(function(a){a.href='https://zalo.me/'+(L.zalo||L.sdt); a.target='_blank'; a.rel='noopener'}); var V=CH.vanChuyen||{}; if(V.ghiChu) $('#ghi-ship').textContent=V.ghiChu; var C=CH.chinhSach||{}; $$('[data-cs]').forEach(function(u){var ds=C[u.dataset.cs]; if(ds&&ds.length) u.innerHTML=ds.map(function(x){return '<li>'+e(x)+'</li>'}).join('')}); $$('[data-cs1]').forEach(function(u){var ds=C[u.dataset.cs1]; if(ds&&ds.length) u.textContent=ds.join(' ')}); if(C.banNhap===false) $$('.tr-cho').forEach(function(x){x.remove()});});
+</script>
+</body>
+</html>

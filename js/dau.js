@@ -5,18 +5,22 @@
 function anh(id, w) {
   if (!id) return '';
   if (/[\/.]/.test(id)) return id;          /* ảnh có sẵn đường dẫn (dây trơn) */
-  return 'https://lh3.googleusercontent.com/d/' + id + '=w' + (w || 600);
+  w = w || 600;
+  /* ảnh lớn (bìa, ảnh chính trang chi tiết, phóng to): bản đầy đủ đang có trên Drive, không thu nhỏ thêm.
+     ảnh thẻ: gấp đôi cỡ hiển thị để nét trên màn hình Retina. ảnh rất nhỏ (giỏ, gợi ý): 400px là thừa nét. */
+  var hau = w > 500 ? '=s0' : w > 260 ? '=w800' : '=w400';
+  return 'https://lh3.googleusercontent.com/d/' + id + hau;
 }
 
 /* ---------- video xem nhanh: món nào có video (data/video.json) thì rê chuột vào thẻ sẽ chạy video ---------- */
 var VIDEO = {};
-fetch('data/video.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { VIDEO = d || {}; }).catch(function () {});
+var VIDEO_SAN = fetch('data/video.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : {}; }).then(function (d) { VIDEO = d || {}; return VIDEO; }).catch(function () { return VIDEO; });
 if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
   document.addEventListener('pointerover', function (ev) {
-    var the = ev.target.closest && ev.target.closest('.sp, .sp2'); if (!the || the._vao) return;
+    var the = ev.target.closest && ev.target.closest('.sp, .sp2, .tim-mon .hinh'); if (!the || the._vao) return;
     the._vao = 1;
-    var ma = the.dataset.ma, khung = the.querySelector('.sp-anh, .sp2-anh > a');
-    if (ma && VIDEO[ma] && khung && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var ma = the.dataset.ma, khung = the.matches('.hinh') ? the : the.querySelector('.sp-anh, .sp2-anh > a');
+    if (ma && VIDEO[ma] && khung && ((window.CH || {}).tinhNang || {}).videoKhiReChuot !== false && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
       var v = khung.querySelector('video.re');
       if (!v) {
         v = document.createElement('video'); v.className = 're'; v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto'; v.src = VIDEO[ma];
@@ -31,6 +35,15 @@ if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     });
   });
 }
+
+/* ---------- thanh trên cùng có sẵn ngay khi mở trang: lấy bản đã vẽ ở trang trước (lưu tạm trong phiên),
+   vài phần nghìn giây sau veDau() vẽ lại bản thật có đủ chức năng ---------- */
+(function () {
+  try {
+    var o = document.getElementById('dau'), luu = sessionStorage.getItem('jadora_dau_html');
+    if (o && luu && !o.firstChild) { o.innerHTML = luu; o.classList.add('tam', 'da-co'); }   /* da-co: thanh đã có từ trang trước, không trượt xuống lại */
+  } catch (x) {}
+})();
 
 /* ---------- yêu thích ---------- */
 function docThich() { try { return JSON.parse(localStorage.getItem('jadora_thich')) || {}; } catch (x) { return {}; } }
@@ -116,7 +129,7 @@ function veDau() {
   var xo1 = '<div class="mg"><div class="mg-o">' + o1.map(function (x) {
       return '<a class="mg-sp" href="' + linkSp(x) + '"><span class="mg-anh">' + hinh(x.anh[0], 480, x.ten) + '<span class="sau">' + hinh(a2(x), 480) + '</span></span>' +
         '<span class="mg-ten">' + e(x.ten) + '</span><span class="mg-gia">' + gia(x.gia) + '</span></a>'; }).join('') + '</div>' +
-    '<div class="mg-chan"><a class="mg-lk" href="san-pham.html?loai=chuoi">Xem tất cả chuỗi →</a><a class="mg-lk" href="lien-he.html">Phối chuỗi riêng →</a>' +
+    '<div class="mg-chan"><a class="mg-lk" href="bo-suu-tap.html?loai=chuoi">Xem tất cả chuỗi →</a><a class="mg-lk" href="tu-thiet-ke.html">Tự thiết kế chuỗi 3D →</a>' +
     '<span class="mg-qua"><span>Miễn phí giao hàng</span> ' + e((V.ghiChu || '').replace(/^.*?(cho )?đơn/i, 'Đơn')) + '</span></div></div>';
 
   /* menu xổ 2: Cửa hàng — các cột liên kết + 2 ô ảnh */
@@ -133,19 +146,32 @@ function veDau() {
     return x ? '<a class="mg-cta" href="' + lk + '"><span class="mg-cta-anh">' + hinh(a2(x), 480) + '</span><span class="mg-cta-chu"><small>' + nhan + '</small><b>' + chu + ' →</b></span></a>' : '';
   }
   var xo2 = '<div class="mg"><div class="mg-cotds">' +
-      cot('Chuỗi mix charm', 'san-pham.html?loai=chuoi', theo.chuoi.slice(0, 40)) +
-      cot('Charm vàng 18K', 'san-pham.html?loai=charm', theo.charm.slice(0, 40)) +
-      (khac.length ? cot('Mặt dây · Nhẫn · Khuyên', 'san-pham.html?loai=matday', khac.slice(0, 40)) : '') +
+      cot('Chuỗi mix charm', 'bo-suu-tap.html?loai=chuoi', theo.chuoi.slice(0, 40)) +
+      cot('Charm vàng 18K', 'bo-suu-tap.html?loai=charm', theo.charm.slice(0, 40)) +
+      (khac.length ? cot('Mặt dây · Nhẫn · Khuyên', 'bo-suu-tap.html?loai=matday', khac.slice(0, 40)) : '') +
       '<div class="mg-cot"><span class="mg-td">Theo chất liệu</span><ul>' + cl.map(function (c) { return '<li><a href="san-pham.html?tim=' + encodeURIComponent(c[0]) + '">' + c[0] + '</a></li>'; }).join('') +
         '<li class="mg-het"><a href="san-pham.html">Xem tất cả →</a></li></ul></div>' +
     '</div>' +
-    '<div class="mg-ctads">' + oAnh(theo.chuoi[1], 'Chuỗi mix charm', 'Xem các chuỗi', 'san-pham.html?loai=chuoi') + oAnh(theo.charm[0], 'Charm vàng 18K', 'Xem các charm', 'san-pham.html?loai=charm') + '</div>' +
+    '<div class="mg-ctads">' + oAnh(theo.chuoi[1], 'Chuỗi mix charm', 'Xem các chuỗi', 'bo-suu-tap.html?loai=chuoi') + oAnh(theo.charm[0], 'Charm vàng 18K', 'Xem các charm', 'bo-suu-tap.html?loai=charm') + '</div>' +
     '<a class="mg-dong" href="san-pham.html"><b>' + DS.length + '</b> món đang có · ảnh thật của từng món <span>Xem tất cả →</span></a></div>';
+
+  /* menu xổ 3: Hướng dẫn — các trang hướng dẫn, chính sách và trang phụ */
+  function cotLk(td, ds) { return '<div class="mg-cot"><span class="mg-td">' + td + '</span><ul>' + ds.map(function (l) { return '<li><a href="' + l[0] + '">' + l[1] + '</a></li>'; }).join('') + '</ul></div>'; }
+  var xo3 = '<div class="mg"><div class="mg-cotds">' +
+      cotLk('Hướng dẫn', [['do-co-tay.html', 'Đo cỡ tay & cỡ nhẫn'], ['bao-quan.html', 'Bảo quản ngọc'], ['kien-thuc.html', 'Kiến thức về ngọc'], ['hoi-dap.html', 'Hỏi đáp']]) +
+      cotLk('Mua hàng', [['giao-hang.html', 'Giao hàng & thanh toán'], ['doi-tra.html', 'Đổi trả & bảo hành'], ['tra-cuu-don.html', 'Tra cứu đơn hàng'], ['qua-tang.html', 'Chọn quà theo ngân sách']]) +
+      cotLk('Jadora', [['gioi-thieu.html', 'Câu chuyện'], ['cam-nhan.html', 'Cảm nhận khách hàng'], ['thu-cong.html', 'Đồ thủ công'], ['lien-he.html', 'Liên hệ']]) +
+    '</div>' +
+    '<div class="mg-ctads">' + oAnh(theo.chuoi[0], 'Xưởng phối chuỗi 3D', 'Tự thiết kế chuỗi', 'tu-thiet-ke.html') + oAnh(theo.chuoi[2] || theo.chuoi[1], 'Hướng dẫn', 'Đo cỡ tay & cỡ nhẫn', 'do-co-tay.html') + '</div>' +
+    '<a class="mg-dong" href="bao-mat.html">Chính sách bảo mật · Điều khoản sử dụng <span>Xem →</span></a></div>';
 
   var mn = [
     { ten: 'Mới về', lk: 'san-pham.html', the: 'Mới' },
-    { ten: 'Chuỗi', lk: 'san-pham.html?loai=chuoi', xo: xo1 },
-    { ten: 'Cửa hàng', lk: 'san-pham.html', xo: xo2, trang: 'san-pham.html' },
+    { ten: 'Chuỗi', lk: 'bo-suu-tap.html?loai=chuoi', xo: xo1 },
+    { ten: 'Charm', lk: 'bo-suu-tap.html?loai=charm' },
+    { ten: 'Trang sức', lk: 'san-pham.html', xo: xo2, trang: 'bo-suu-tap.html' },
+    { ten: 'Tự thiết kế', lk: 'tu-thiet-ke.html', the: '3D', trang: 'tu-thiet-ke.html' },
+    { ten: 'Hướng dẫn', lk: 'do-co-tay.html', xo: xo3, trang: 'do-co-tay.html' },
     { ten: 'Câu chuyện', lk: 'gioi-thieu.html', trang: 'gioi-thieu.html' },
     { ten: 'Liên hệ', lk: 'lien-he.html', trang: 'lien-he.html' }
   ];
@@ -175,7 +201,10 @@ function veDau() {
     '</div></aside>' +
     '<div class="d-keo"><div class="d-keo-trong">' +
       '<a href="index.html">Trang chủ</a><a href="san-pham.html">Mới về</a>' +
-      THU_TU.filter(function (k) { return theo[k].length; }).map(function (k) { return '<a class="nho" href="san-pham.html?loai=' + k + '">' + LOAI[k].ten + '<span>' + theo[k].length + '</span></a>'; }).join('') +
+      THU_TU.filter(function (k) { return theo[k].length; }).map(function (k) { return '<a class="nho" href="bo-suu-tap.html?loai=' + k + '">' + LOAI[k].ten + '<span>' + theo[k].length + '</span></a>'; }).join('') +
+      '<a href="tu-thiet-ke.html">Tự thiết kế chuỗi 3D</a><a href="qua-tang.html">Quà tặng</a>' +
+      '<a class="nho" href="do-co-tay.html">Đo cỡ tay &amp; cỡ nhẫn</a><a class="nho" href="bao-quan.html">Bảo quản ngọc</a><a class="nho" href="hoi-dap.html">Hỏi đáp</a>' +
+      '<a class="nho" href="giao-hang.html">Giao hàng &amp; thanh toán</a><a class="nho" href="doi-tra.html">Đổi trả &amp; bảo hành</a><a class="nho" href="tra-cuu-don.html">Tra cứu đơn hàng</a>' +
       '<a href="gioi-thieu.html">Câu chuyện</a><a href="lien-he.html">Liên hệ</a>' +
       (L.sdt ? '<a class="nho" href="tel:' + e(L.sdt) + '">Gọi ' + e(L.sdt) + '</a>' : '') +
     '</div></div>';
@@ -221,5 +250,28 @@ function veDau() {
     veNganGio();
   });
   veSoGio(); veSoThich();
+  el.classList.remove('tam');
+  try { sessionStorage.setItem('jadora_dau_html', el.innerHTML); } catch (x) {}
   if (window.KHACH) { KHACH.veNut(); KHACH.batDau(); }   /* đăng nhập Google: hiện ảnh đại diện nếu đã đăng nhập */
 }
+
+/* ---------- nút về đầu trang: hiện khi đã cuộn quá một màn hình, có vòng báo đã cuộn được bao nhiêu ---------- */
+(function () {
+  var nut = document.createElement('button');
+  nut.type = 'button'; nut.className = 'len-dau'; nut.setAttribute('aria-label', 'Về đầu trang');
+  nut.innerHTML = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle class="nen" cx="24" cy="24" r="22"/><circle class="vong" cx="24" cy="24" r="22" pathLength="100"/><path d="M24 31V17M17.500 23.500L24 17l6.500 6.500"/></svg>';
+  document.body.appendChild(nut);
+  var vong = nut.querySelector('.vong'), cho = 0;
+  function cap() {
+    cho = 0;
+    var cao = document.documentElement.scrollHeight - innerHeight, p = cao > 0 ? Math.min(1, scrollY / cao) : 0;
+    nut.classList.toggle('hien', scrollY > innerHeight * .9);
+    vong.style.strokeDashoffset = (100 - p * 100).toFixed(1);
+  }
+  addEventListener('scroll', cap, { passive: true });   /* chỉ đọc vị trí cuộn rồi đổi 1 lớp + 1 thuộc tính, nhẹ nên chạy thẳng */
+  nut.addEventListener('click', function () {
+    var giam = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    scrollTo({ top: 0, behavior: giam ? 'auto' : 'smooth' });
+  });
+  cap();
+})();

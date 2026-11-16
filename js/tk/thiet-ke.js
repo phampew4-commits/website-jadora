@@ -505,20 +505,20 @@ function taoAnhTk() {
 function ghepAnh(im, iw, ih, ok, loi) {   // khung 1080×1350: hình vòng + tên dây, cỡ, danh sách charm, tổng ước tính
         var W = 1080, H = 1350, c = document.createElement('canvas'), x = c.getContext('2d'); c.width = W; c.height = H;
         x.fillStyle = '#F6F1EA'; x.fillRect(0, 0, W, H);
-        x.fillStyle = '#587553'; x.font = '500 26px "Be Vietnam Pro", sans-serif'; x.textAlign = 'center'; x.fillText('JADORA · THIẾT KẾ CHUỖI', W / 2, 78);
+        x.fillStyle = '#587553'; x.font = '500 26px "Jadora Sans", sans-serif'; x.textAlign = 'center'; x.fillText('JADORA · THIẾT KẾ CHUỖI', W / 2, 78);
         var g = x.createRadialGradient(W / 2, 520, 60, W / 2, 520, 470); g.addColorStop(0, '#FFFDF8'); g.addColorStop(1, '#EEF0E3');
         x.fillStyle = g; x.beginPath(); x.arc(W / 2, 520, 440, 0, 7); x.fill();
         x.drawImage(im, W / 2 - iw / 2, 520 - ih / 2, iw, ih);
-        x.fillStyle = '#2A2622'; x.font = '400 46px "Lora", Georgia, serif';
+        x.fillStyle = '#2A2622'; x.font = '400 46px "Jadora Serif", Georgia, serif';
         x.fillText(chon.day.ten, W / 2, 1010, W - 120);
-        x.font = '400 28px "Be Vietnam Pro", sans-serif'; x.fillStyle = '#5b6b70';
+        x.font = '400 28px "Jadora Sans", sans-serif'; x.fillStyle = '#5b6b70';
         x.fillText('Quấn ' + chon.vong + ' vòng · cỡ tay ' + String(chon.tay).replace('.', ',') + ' cm · ' + tongHat() + ' hạt · ' + chon.gan.length + ' charm', W / 2, 1060, W - 120);
         var ds = thuTu().map(function (q) { return q.c.ten.replace(/^Charm\s+/i, ''); }), dong = '', dongs = [];
         ds.forEach(function (s) { var t2 = dong ? dong + ' · ' + s : s; if (x.measureText(t2).width > W - 140 && dong) { dongs.push(dong); dong = s; } else dong = t2; });
         if (dong) dongs.push(dong);
-        x.font = '400 24px "Be Vietnam Pro", sans-serif'; dongs.slice(0, 3).forEach(function (s, i) { x.fillText(s + (i === 2 && dongs.length > 3 ? ' …' : ''), W / 2, 1110 + i * 34, W - 120); });
-        x.fillStyle = '#587553'; x.font = '500 40px "Lora", Georgia, serif'; x.fillText('Tổng ước tính ' + uoc(tong()), W / 2, 1250);
-        x.fillStyle = '#8a8070'; x.font = '400 22px "Be Vietnam Pro", sans-serif'; x.fillText('Ảnh thiết kế từ web Jadora · giá chính xác cửa hàng báo lại', W / 2, 1300, W - 120);
+        x.font = '400 24px "Jadora Sans", sans-serif'; dongs.slice(0, 3).forEach(function (s, i) { x.fillText(s + (i === 2 && dongs.length > 3 ? ' …' : ''), W / 2, 1110 + i * 34, W - 120); });
+        x.fillStyle = '#587553'; x.font = '500 40px "Jadora Serif", Georgia, serif'; x.fillText('Tổng ước tính ' + uoc(tong()), W / 2, 1250);
+        x.fillStyle = '#8a8070'; x.font = '400 22px "Jadora Sans", sans-serif'; x.fillText('Ảnh thiết kế từ web Jadora · giá chính xác cửa hàng báo lại', W / 2, 1300, W - 120);
         c.toBlob(function (b) { b ? ok(b) : loi(); }, 'image/png');
 }
 var hopGui = null, anhGui = null;

@@ -1,5 +1,17 @@
 /* ===== JADORA — bảng màu & chữ lấy cảm hứng từ cozyleigh.studio ===== */
 
+/* Font riêng của Jadora — dựng cho sát chữ của web mẫu cozyleigh.studio (larken + futura-pt)
+   nhưng có đủ tiếng Việt. Jadora Serif dựng từ Lora, Jadora Sans dựng từ Afacad (đều SIL OFL),
+   chỉnh lại độ rộng nét, khoảng chữ và chiều cao chữ hoa theo số đo của font mẫu.
+   Xem fonts/NGUON.md, fonts/OFL-Lora.txt, fonts/OFL-Afacad.txt. */
+@font-face{font-family:"Jadora Serif";font-style:normal;font-weight:300 400;font-display:swap;src:url(../fonts/jadora-serif-400.woff2) format("woff2");}
+@font-face{font-family:"Jadora Serif";font-style:normal;font-weight:500 700;font-display:swap;src:url(../fonts/jadora-serif-500.woff2) format("woff2");}
+@font-face{font-family:"Jadora Serif";font-style:italic;font-weight:300 400;font-display:swap;src:url(../fonts/jadora-serif-400i.woff2) format("woff2");}
+@font-face{font-family:"Jadora Serif";font-style:italic;font-weight:500 700;font-display:swap;src:url(../fonts/jadora-serif-500i.woff2) format("woff2");}
+@font-face{font-family:"Jadora Sans";font-style:normal;font-weight:300 400;font-display:swap;src:url(../fonts/jadora-sans-400.woff2) format("woff2");}
+@font-face{font-family:"Jadora Sans";font-style:normal;font-weight:500 700;font-display:swap;src:url(../fonts/jadora-sans-500.woff2) format("woff2");}
+@font-face{font-family:"Jadora Sans";font-style:italic;font-weight:300 700;font-display:swap;src:url(../fonts/jadora-sans-400i.woff2) format("woff2");}
+
 :root{
   --kem:#FFFDF8; --kem2:#F6F1EA; --kem3:#EEF0E3;
   --muc:#2A2622; --than:#5A5248; --nhat:#8C8276;
@@ -7,8 +19,8 @@
   --dao:#F59178; --dao-nhat:#FBD2B0;
   --toi:#33452F;
   --vien:rgba(90,82,72,.16); --vien-dam:rgba(90,82,72,.3);
-  --serif:"Lora",Georgia,"Times New Roman",serif;
-  --sans:"Be Vietnam Pro","Helvetica Neue",Arial,sans-serif;
+  --serif:"Jadora Serif",Georgia,"Times New Roman",serif;
+  --sans:"Jadora Sans","Helvetica Neue",Arial,sans-serif;
   --bo:999px; --rong:1280px;
   --nhay:cubic-bezier(.22,.61,.36,1);
 }

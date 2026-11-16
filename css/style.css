@@ -1,4 +1,5 @@
 /* ===== JADORA — bảng màu & chữ lấy cảm hứng từ cozyleigh.studio ===== */
+
 :root{
   --kem:#FFFDF8; --kem2:#F6F1EA; --kem3:#EEF0E3;
   --muc:#2A2622; --than:#5A5248; --nhat:#8C8276;
@@ -6,7 +7,7 @@
   --dao:#F59178; --dao-nhat:#FBD2B0;
   --toi:#33452F;
   --vien:rgba(90,82,72,.16); --vien-dam:rgba(90,82,72,.3);
-  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --serif:"Lora",Georgia,"Times New Roman",serif;
   --sans:"Be Vietnam Pro","Helvetica Neue",Arial,sans-serif;
   --bo:999px; --rong:1280px;
   --nhay:cubic-bezier(.22,.61,.36,1);
@@ -250,7 +251,6 @@ select.sx{border:1px solid var(--vien);border-radius:999px;padding:10px 18px;bac
   .sp-them{opacity:1;transform:none}
 }
 
-
 /* ===== Trang trong theo mẫu v2: tiêu đề lớn căn trái ===== */
 .trang-dau{text-align:left;padding:clamp(34px,5vw,64px) 0 clamp(24px,3vw,40px)}
 .trang-dau h1{font-size:clamp(2.6rem,6vw,4.4rem)}
@@ -302,7 +302,6 @@ select.sx{border:1px solid var(--vien);border-radius:999px;padding:10px 18px;bac
 .chan-moi .kenh{display:flex;gap:10px;flex-wrap:wrap}
 .chan-moi .nut.vien{color:#fff}
 .chan-moi .nut.vien:hover{background:#fff;color:var(--toi);border-color:#fff}
-
 
 /* ---- mục xếp gập: dấu cộng xoay, tiêu đề đổi màu, các dòng hiện lần lượt ---- */
 .xep summary,.ct2-xep summary{transition:color .3s}

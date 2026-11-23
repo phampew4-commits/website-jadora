@@ -206,8 +206,8 @@
         /* charm treo: con lắc thật — rủ theo trọng lực, khoá trượt quanh dây, đung đưa khi vòng xoay rồi tắt dần */
         Pw.copy(o.giu.position); chua.localToWorld(Pw); Tw.copy(o.T).transformDirection(chua.matrixWorld);
         if (!o.b) { o.b = Pw.clone().add(new V3((Math.random() - .5) * .8, -.3, .9)); o.bT = o.b.clone(); }
-        vt.copy(o.b).sub(o.bT).multiplyScalar(Math.exp(-dt * 2.4)); o.bT.copy(o.b); o.b.add(vt); o.b.y -= 46 * dt * dt;
-        r3.copy(o.b).sub(Pw); r3.addScaledVector(Tw, -r3.dot(Tw)); if (r3.lengthSq() < 1e-6) r3.set(0, -1, 0); r3.normalize(); o.b.copy(Pw).add(r3);
+        vt.copy(o.b).sub(o.bT).multiplyScalar(Math.exp(-dt * 2.4)); o.bT.copy(o.b); o.b.add(vt); if (V.trongLuc && !deo) o.b.addScaledVector(V.trongLuc, 46 * dt * dt); else o.b.y -= 46 * dt * dt;
+        r3.copy(o.b).sub(Pw); r3.addScaledVector(Tw, -r3.dot(Tw)); if (V.trongLuc && !deo) { vt.set(0, 0, 0); chua.localToWorld(vt); vt.subVectors(Pw, vt); vt.addScaledVector(V.trongLuc, -vt.dot(V.trongLuc)).normalize(); var huongVao = r3.dot(vt); if (huongVao < 0) r3.addScaledVector(vt, -huongVao); } if (r3.lengthSq() < 1e-6) r3.set(0, -1, 0); r3.normalize(); o.b.copy(Pw).add(r3);
         yA.copy(r3).negate(); zA.set(0, .25, 1).addScaledVector(yA, -yA.y * .25 - yA.z).normalize(); xA.crossVectors(yA, zA).normalize(); zA.crossVectors(xA, yA);
         mB.makeBasis(xA, yA, zA); o.giu.quaternion.setFromRotationMatrix(mB).premultiply(qCha);
         var kh = o.m.g.userData.khoa; if (kh) kh.rotation.y = Math.atan2(-Tw.dot(zA), Tw.dot(xA));
@@ -269,9 +269,10 @@
     function chay() { if (dangChay || !tt) return; dangChay = true; truoc = performance.now(); requestAnimationFrame(f); }
     function f(t) {
       var dt = Math.min(.05, (t - truoc) / 1000); truoc = t;
-      if (!thay || document.hidden) { dangChay = false; return; }
+      if ((!thay && !mini) || document.hidden) { dangChay = false; return; }
       buoc(dt);
       R.render(canh, cam);
+      if (mini) veMini();
       if (V.khi.khung) V.khi.khung();
       /* đứng yên hẳn (không kéo, không lướt, con lắc tắt) → nghỉ vẽ cho đỡ tốn pin */
       var dong = keo || canNhin || hatDong || (!GIAM && tt.cheDo !== 'deo' && !chonO) ||   // thiết kế: chạy tiếp để tự xoay (kể cả lúc chờ 4 giây sau khi khách chạm) cam.position.distanceToSquared(cT) > 1e-6 || Math.abs(vX) > 1e-4 || (tt.cheDo === 'deo' && tuSpin) || vongChon.visible;
@@ -317,7 +318,19 @@
       if (!dangChay && tt) for (var i = 0; i < 80; i++) buoc(.05);
       var v = vongChon.visible; vongChon.visible = false; R.render(canh, cam); vongChon.visible = v; return cv; }
 
-    var V = window.V3D = { THREE: THREE, canh: canh, cam: cam, R: R, nghieng: nghieng, cv: cv, chay: chay, ve: ve, viTri: viTri, anh: anh, bien: function (id) { return (X.bien || {})[id] || null; }, khi: {} };
+    /* vòng thu nhỏ nổi (điện thoại): chép từng khung hình vào ô nhỏ → vòng nhỏ cũng xoay như vòng lớn */
+    var mini = null, gMini = null;
+    function veMini() {
+      var w = mini.width, h = mini.height, s = Math.min(w / cv.width, h / cv.height), dw = cv.width * s, dh = cv.height * s;
+      gMini.clearRect(0, 0, w, h);
+      gMini.drawImage(cv, (w - dw) / 2, (h - dh) / 2, dw, dh);
+    }
+    function datMini(c) {   // c: <canvas> của vòng thu nhỏ, null = tắt
+      mini = c || null; gMini = mini ? mini.getContext('2d') : null;
+      if (mini) { for (var i = 0; i < 80 && !dangChay; i++) buoc(.05); R.render(canh, cam); veMini(); chay(); }
+    }
+
+    var V = window.V3D = { THREE: THREE, canh: canh, cam: cam, R: R, nghieng: nghieng, cv: cv, chay: chay, ve: ve, viTri: viTri, anh: anh, mini: datMini, bien: function (id) { return (X.bien || {})[id] || null; }, khi: {} };
     document.querySelector('.tk-san').classList.add('co-3d');
     dispatchEvent(new Event('vong3d'));
   }

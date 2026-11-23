@@ -551,3 +551,25 @@
   .xq3-buoc li{grid-template-columns:46px 1fr}
 }
 @media(prefers-reduced-motion:reduce){.xq3-canh *,.xq-san.ra .xq-charm{animation-duration:.01s!important;animation-iteration-count:1!important}}
+
+/* ---------- 9. "Tìm món của bạn": đổi món không giật ---------- */
+.tim-mon>*{animation:none}
+.tim-mon .hinh img.tm-lop{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .55s var(--nhay),transform .9s var(--nhay)}
+.tim-mon .hinh img.tm-lop.ro{opacity:1}
+.tm-chu{transition:opacity .28s,translate .28s var(--nhay)}
+.tm-chu.mo-di{opacity:0;translate:0 8px;transition-duration:.18s}
+.tim-mon h3{text-wrap:balance}
+#tm{overflow-anchor:none}
+
+/* ---------- chữ nhỏ (tên, giá ở thẻ sản phẩm, nhãn, dải cam kết) tăng một nấc cho dễ đọc ---------- */
+.nhan{font-size:.78rem}
+.cam-ket li{font-size:.8rem}
+.the,.sp2-the{font-size:.7rem}
+.sp2 h3,.sp2 h3 a{font-size:1rem}
+.sp2-gia{font-size:.98rem}
+.luoi.sat .sp-ten{font-size:.98rem}
+.luoi.sat .sp-gia{font-size:.95rem}
+.sp-ten{font-size:1.08rem}
+.sp-gia{font-size:1rem}
+.nut{font-size:.82rem}
+@media(max-width:700px){.cam-ket li{font-size:.72rem}}

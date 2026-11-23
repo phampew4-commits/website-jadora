@@ -55,6 +55,14 @@ def main():
         moi = 0      # không tạo bản nén nhỏ nữa: mọi chỗ trên web dùng bản gốc của app
         moi_goc = sum(tp.map(chep, [(v, GOC / d.name) for v, d in viec]))
     (WEB / "data" / "video.json").write_text(json.dumps(co, ensure_ascii=False), encoding="utf-8")
+    # cỡ từng video (rộng, cao) → trang chủ ưu tiên video nét nhất làm nền băng chuyền "Xem trên tay"
+    kt = {}
+    for ma in co:
+        r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0:s=x",
+                            str(GOC / f"{ma}.mp4")], capture_output=True, text=True).stdout.strip()
+        if "x" in r:
+            w, h = r.split("x")[:2]; kt[ma] = [int(w), int(h)]
+    (WEB / "data" / "video-co.json").write_text(json.dumps(kt, ensure_ascii=False), encoding="utf-8")
     nang = sum(f.stat().st_size for f in RA.glob("*.mp4")) / 1e6
     nang_goc = sum(f.stat().st_size for f in GOC.glob("*.mp4")) / 1e6
     print(f"món có video: {len(co)} | vừa nén: {moi} | thư mục video/sp: {nang:.1f} MB")

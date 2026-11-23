@@ -64,6 +64,11 @@ for a, b in (("kc = 10 + kq.BKmax * 3.1,", "kc = (10 + kq.BKmax * 3.1) * (V.xaDe
              # Cỡ charm: mô hình đã được chuẩn hoá về mm thật (bảng số đo KT, cỡ ghi trong tên, hoặc ước theo ảnh).
              # Bản Ngọc Trầm thu nhỏ thêm cho "cân mắt" (xuyên ×0,8 · treo ×0,72); Jadora giữ ĐÚNG CỠ THẬT so với hạt.
              ("var CO_XUYEN = .8, CO_TREO = .72;", "var CO_XUYEN = 1, CO_TREO = 1;"),
+             # Charm treo: bản gốc rủ theo chiều "xuống màn hình". Khi chuỗi nằm trên bàn 3D (js/xuong-canh.js đặt V3D.trongLuc = hướng
+             # vuông góc xuống mặt bàn) thì charm phải rủ theo mặt bàn, và không được đung đưa vào phía trong (chỗ có trụ trưng bày).
+             ("o.b.y -= 46 * dt * dt;", "if (V.trongLuc && !deo) o.b.addScaledVector(V.trongLuc, 46 * dt * dt); else o.b.y -= 46 * dt * dt;"),
+             ("r3.copy(o.b).sub(Pw); r3.addScaledVector(Tw, -r3.dot(Tw)); if (r3.lengthSq() < 1e-6)",
+              "r3.copy(o.b).sub(Pw); r3.addScaledVector(Tw, -r3.dot(Tw)); if (V.trongLuc && !deo) { vt.set(0, 0, 0); chua.localToWorld(vt); vt.subVectors(Pw, vt); vt.addScaledVector(V.trongLuc, -vt.dot(V.trongLuc)).normalize(); var huongVao = r3.dot(vt); if (huongVao < 0) r3.addScaledVector(vt, -huongVao); } if (r3.lengthSq() < 1e-6)"),
              ("cT.set(0, 0, 7 + Math.max(bk, 3.1) * 3.3);", "cT.set(0, 0, (7 + Math.max(bk, 3.1) * 3.3) * (V.xa || 1));"),
              ("var V = window.V3D = { ve: ve, viTri: viTri, anh: anh,", "var V = window.V3D = { THREE: THREE, canh: canh, cam: cam, R: R, nghieng: nghieng, cv: cv, chay: chay, ve: ve, viTri: viTri, anh: anh,")):
     if a not in v: print('LECH vong-3d', a[:50])

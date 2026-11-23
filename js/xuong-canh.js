@@ -13,7 +13,7 @@ window.XUONG_CANH = function (V, tuy) {
   /* Cả cảnh thu nhỏ còn 62% so với chuỗi (chuỗi giữ cỡ thật) → chuỗi chính to, nổi bật giữa bàn.
      Mặt lòng khay nằm ở y = -1,9: chuỗi không đặt sát khay mà ôm quanh một TRỤ TRƯNG BÀY bằng gỗ,
      nên charm treo rủ tự do bên ngoài trụ, không đâm xuống mặt khay. */
-  var TL = .62, Y_KHAY = -1.9;
+  var TL = .62, Y_KHAY = -2.7;   // khay thấp hơn chuỗi 2,7 cm: charm treo dài nhất (~2 cm) vẫn chưa chạm lòng khay
   G.scale.setScalar(TL); G.position.y = Y_KHAY - (-1.55 + .12 + 1.2 * 1.25) * TL;
 
   /* ---------- vật liệu ---------- */
@@ -52,7 +52,7 @@ window.XUONG_CANH = function (V, tuy) {
   bong(0, .5, 8.2, 7.8, Y + .14);
   /* trụ trưng bày (đơn vị thật, không thu nhỏ): chuỗi ôm quanh đầu trụ */
   var tru0 = new T.Group(); V.nghieng.add(tru0);
-  them(new T.CylinderGeometry(2.26, 2.42, .3 - Y_KHAY, 56), mGo, 0, (Y_KHAY + .3) / 2, 0, tru0);
+  them(new T.CylinderGeometry(2.2, 1.7, .3 - Y_KHAY, 56), mGo, 0, (Y_KHAY + .3) / 2, 0, tru0);   // trụ thon dần xuống dưới → charm treo rủ sát chuỗi không chạm thân trụ
   var mat0 = them(new T.CircleGeometry(2.05, 56), mTham, 0, .305, 0, tru0); mat0.rotation.x = -PI / 2;
   var bongTru = new T.Mesh(new T.PlaneGeometry(1, 1), mBong); bongTru.rotation.x = -PI / 2; bongTru.position.set(0, Y_KHAY + .02, .3); bongTru.scale.set(7.4, 7, 1); bongTru.renderOrder = 1; tru0.add(bongTru);
   /* bóng mềm của bộ máy nằm lơ lửng giữa trụ → tắt */
@@ -210,8 +210,10 @@ window.XUONG_CANH = function (V, tuy) {
 
   /* ---------- chuyển động từng khung hình ---------- */
   var khungCu = V.khi.khung;
+  V.trongLuc = new T.Vector3(0, -1, 0);
   V.khi.khung = function () {
     if (khungCu) khungCu();
+    V.trongLuc.set(0, -1, 0).transformDirection(V.nghieng.matrixWorld);   // "xuống" = vuông góc với mặt bàn (bàn nghiêng theo góc nhìn)
     var t = (performance.now() - t0) / 1000, i;
     for (i = 0; i < minis.length; i++) { var m = minis[i]; if (!bay) m.xoay.rotation.x = Math.sin(t * 1.1 + m.pha) * .1; }   // đung đưa quanh thanh gỗ (đứng yên lúc đang đổi chuỗi để hai hình khớp nhau)
     if (bay) {

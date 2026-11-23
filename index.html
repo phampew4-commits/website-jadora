@@ -6,11 +6,11 @@
 <title>Jadora — Ngọc phỉ thuý & đồ thủ công</title>
 <meta name="description" content="Phỉ thuý tự nhiên và charm vàng 18K, mỗi món được chọn và xâu bằng tay.">
 <link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=261115165157">
-<link rel="stylesheet" href="css/mau.css?v=261115165157">
-<link rel="stylesheet" href="css/hieu-ung.css?v=261115165157">
-<link rel="stylesheet" href="css/khop-mau.css?v=261115165157">
-<link rel="stylesheet" href="css/dau.css?v=261115165157">
+<link rel="stylesheet" href="css/style.css?v=261123162856">
+<link rel="stylesheet" href="css/mau.css?v=261123162856">
+<link rel="stylesheet" href="css/hieu-ung.css?v=261123162856">
+<link rel="stylesheet" href="css/khop-mau.css?v=261123162856">
+<link rel="stylesheet" href="css/dau.css?v=261123162856">
 </head>
 <body>
 <div id="dau"></div>
@@ -228,10 +228,10 @@
 
 <div id="chan"></div>
 
-<script src="js/chung.js?v=261115165157"></script>
-<script src="js/hieu-ung.js?v=261115165157"></script>
-<script src="js/dau.js?v=261115165157"></script>
-<script src="js/khach.js?v=261115165157"></script>
+<script src="js/chung.js?v=261123162856"></script>
+<script src="js/hieu-ung.js?v=261123162856"></script>
+<script src="js/dau.js?v=261123162856"></script>
+<script src="js/khach.js?v=261123162856"></script>
 <script>
 var ICON = {
   khien:'<svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 7.9-8 9-4.8-1.1-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>',
@@ -449,10 +449,12 @@ khoiDong(function(){
     ds.forEach(function(x,i){ghim.insertAdjacentHTML('afterbegin','<div class="a p'+b+(i+1)+'" data-b="'+b+'" aria-hidden="true">'+img(x.anh[1]||x.anh[0],400)+'</div>')})});
 
   /* 7. ảnh lớn + băng chuyền: nền là VIDEO của đúng chuỗi đang chọn (chuỗi chưa có video thì nền là ảnh trôi chậm) */
-  (window.VIDEO_SAN||Promise.resolve({})).then(function(){
+  (window.VIDEO_SAN||Promise.resolve({})).then(function(){ return fetch('data/video-co.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():{}}).catch(function(){return {}}) }).then(function(CO_VIDEO){
     var xem=$('#xem'), i7=0, nhe7=(navigator.connection&&navigator.connection.saveData)||matchMedia('(prefers-reduced-motion: reduce)').matches;
     /* ưu tiên năm chuỗi mới nhất có video; thiếu thì bù bằng chuỗi mới nhất chưa có video */
-    var coV=chuoi.filter(function(x){return VIDEO[x.ma]}), ds7=coV.slice(0,5);
+    /* video nền chiếu kín màn hình nên chọn video NÉT NHẤT trước (bề ngang lớn nhất), cùng cỡ thì món mới hơn đứng trước */
+    function rongV(x){ var k=CO_VIDEO[x.ma]; return k? Math.min(k[0],1080)+(k[0]>=k[1]?1:0) : 0 }
+    var coV=chuoi.filter(function(x){return VIDEO[x.ma]}).map(function(x,i){return [x,i]}).sort(function(a,b){return rongV(b[0])-rongV(a[0])||a[1]-b[1]}).map(function(a){return a[0]}), ds7=coV.slice(0,5);
     chuoi.forEach(function(x){ if(ds7.length<5&&ds7.indexOf(x)<0) ds7.push(x) });
     if(!ds7.length) return;
     function nguon(x){return VIDEO[x.ma].replace('video/sp/','video/goc/')}
@@ -506,16 +508,36 @@ khoiDong(function(){
   /* 9. tìm món */
   var tmK=dmLoai[0], tmI=0;
   $('#tm-loc').innerHTML=dmLoai.map(function(k,i){return '<button type="button" data-k="'+k+'"'+(i?'':' class="chon"')+'>'+LOAI[k].ngan+'</button>'}).join('');
+  /* Khung của khối dựng MỘT lần; mỗi lần đổi món chỉ thay nội dung bên trong:
+     - ảnh mới tải xong mới hiện, mờ dần đè lên ảnh cũ (không chớp trắng, không giật);
+     - chữ mờ đi rồi đổi; nút và bộ đếm giữ nguyên;
+     - chiều cao khối không co lại giữa chừng nên trang không bị kéo lên / kéo xuống. */
+  var tm=$('#tm'), tmLan=0;
+  tm.innerHTML='<div class="tim-mon"><a class="hinh" href="#"></a><div class="tm-chu"></div></div>'+
+    '<div class="tim-dieu"><button type="button" data-d="-1" aria-label="Trước">←</button><span></span><button type="button" data-d="1" aria-label="Sau">→</button></div>';
+  var tmHinh=$('.hinh',tm), tmChu=$('.tm-chu',tm), tmDem=$('.tim-dieu span',tm);
+  function tmBo(ds){ ds.forEach(function(v){ if(v.parentNode) v.parentNode.removeChild(v) }) }
   function veTm(){
-    var ds=theo[tmK].slice(0,5), x=ds[tmI];
-    $('#tm').innerHTML='<div class="tim-mon">'+
-      '<a class="hinh" data-ma="'+e(x.ma)+'" href="'+linkSp(x)+'">'+img(x.anh[0],640,x.ten)+(x.anh[1]?'<span class="sau">'+img(x.anh[1],640)+'</span>':'')+'</a>'+
-      '<div><p class="nhan">'+e(LOAI[tmK].ten)+' · Mã '+e(x.ma)+'</p><h3>'+e(x.ten)+'</h3>'+
+    var ds=theo[tmK].slice(0,5), x=ds[tmI], lan=++tmLan, dau=!tmChu.firstChild;
+    $('.tim-dieu',tm).style.visibility=ds.length>1?'':'hidden'; tmDem.textContent=(tmI+1)+' / '+ds.length;
+    /* chữ */
+    var chu='<p class="nhan">'+e(LOAI[tmK].ten)+' · Mã '+e(x.ma)+'</p><h3>'+e(x.ten)+'</h3>'+
         ((x.tp||[]).length?'<p class="nhan" style="margin:18px 0 6px">Đi kèm</p><div class="vien-ds">'+x.tp.slice(0,4).map(function(t){return '<span>'+e(t)+'</span>'}).join('')+'</div>':'')+
         '<div class="gia-lon">'+gia(x.gia)+'</div>'+
-        '<div class="nut-hang"><button class="nut dac them-gio" type="button" data-ma="'+e(x.ma)+'">Thêm vào giỏ</button><a class="gio-xoa" href="'+linkSp(x)+'" style="margin:0">Xem chi tiết</a></div>'+
-      '</div></div>'+
-      (ds.length>1?'<div class="tim-dieu"><button type="button" data-d="-1" aria-label="Trước">←</button><span>'+(tmI+1)+' / '+ds.length+'</span><button type="button" data-d="1" aria-label="Sau">→</button></div>':'');
+        '<div class="nut-hang"><button class="nut dac them-gio" type="button" data-ma="'+e(x.ma)+'">Thêm vào giỏ</button><a class="gio-xoa" href="'+linkSp(x)+'" style="margin:0">Xem chi tiết</a></div>';
+    function datChu(){ if(lan!==tmLan) return; tmChu.innerHTML=chu; tmChu.classList.remove('mo-di');
+      if(tm.offsetHeight>(parseFloat(tm.style.minHeight)||0)) tm.style.minHeight=tm.offsetHeight+'px' }   /* chỉ cho khối cao lên, không co lại */
+    if(dau) datChu(); else { tmChu.classList.add('mo-di'); setTimeout(datChu,190) }
+    /* ảnh: tải xong mới mờ dần đè lên ảnh cũ */
+    tmHinh.href=linkSp(x); tmHinh.dataset.ma=x.ma; tmHinh._vao=false; tmHinh.classList.remove('co-video');
+    tmBo($$('video.re,.sau',tmHinh));
+    var moi=new Image(); moi.alt=x.ten; moi.decoding='async'; moi.referrerPolicy='no-referrer'; moi.className='tm-lop';
+    function hien(){ if(lan!==tmLan) return; tmHinh.appendChild(moi); void moi.offsetWidth; moi.classList.add('ro');
+      setTimeout(function(){ if(lan!==tmLan) return; tmBo($$('img.tm-lop',tmHinh).filter(function(c){return c!==moi}));
+        if(x.anh[1]){ var sau=document.createElement('span'); sau.className='sau'; sau.innerHTML=img(x.anh[1],640); tmHinh.appendChild(sau) } },560) }
+    moi.onload=function(){ (moi.decode?moi.decode():Promise.resolve()).then(hien,hien) }; moi.onerror=hien; moi.src=anh(x.anh[0],640);
+    /* tải sẵn ảnh của món kế trước / kế sau để bấm là có ngay */
+    [ds[(tmI+1)%ds.length],ds[(tmI-1+ds.length)%ds.length]].forEach(function(k){ if(k&&k!==x){ var t=new Image(); t.referrerPolicy='no-referrer'; t.src=anh(k.anh[0],640) } });
   }
   $('#tm-loc').onclick=function(ev){var b=ev.target.closest('button'); if(!b) return;
     tmK=b.dataset.k; tmI=0; $$('#tm-loc button').forEach(function(o){o.classList.toggle('chon',o===b)}); veTm(); tcTm.dat()};

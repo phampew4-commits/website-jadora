@@ -21,13 +21,14 @@
   --vien:rgba(90,82,72,.16); --vien-dam:rgba(90,82,72,.3);
   --serif:"Jadora Serif",Georgia,"Times New Roman",serif;
   --sans:"Jadora Sans","Helvetica Neue",Arial,sans-serif;
-  --bo:999px; --rong:1280px;
+  --bo:999px; --rong:76rem;   /* bề ngang nội dung nở theo cỡ chữ: 1254px ở màn 1280, 1520px ở màn 2048 */
   --nhay:cubic-bezier(.22,.61,.36,1);
 }
 *,*::before,*::after{box-sizing:border-box}
-/* cỡ chữ gốc: hầu hết cỡ chữ trên web tính theo rem nên chỉ cần đổi ở đây. Màn rộng 17,5px (trước là 16px), điện thoại 16,5px */
-html{scroll-behavior:smooth;font-size:109.375%}
-@media(max-width:700px){html{font-size:103.125%}}
+/* CỠ CHỮ GỐC CO GIÃN THEO BỀ RỘNG MÀN HÌNH. Hầu hết cỡ chữ trên web tính theo rem nên chỉ cần chỉnh ở đây.
+   Điện thoại và màn hẹp tới ~1170px: 16px · laptop 1280: 16,5px · MacBook 14" mặc định (1512): 17,6px ·
+   MacBook 14" chế độ 2048 × 1330 (màn anh đang dùng, điểm ảnh rất nhỏ): 20px · 2560: 22,3px · 3024: 24,5px · tối đa 25,6px. */
+html{scroll-behavior:smooth;font-size:clamp(1rem, .667rem + .456vw, 1.6rem)}
 body{margin:0;background:var(--kem);color:var(--than);font-family:var(--sans);font-size:1rem;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
@@ -138,13 +139,13 @@ p{margin:0 0 1em}
 .chuyen p{color:rgba(255,255,255,.85);margin:20px auto 32px;max-width:520px}
 
 /* ---- footer ---- */
-.chan{background:var(--toi);color:#B9B0A4;padding:70px 0 30px;font-size:.9rem}
+.chan{background:var(--toi);color:#DAD2C5;padding:70px 0 30px;font-size:.95rem}
 .chan-luoi{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:40px}
-.chan h4{font-family:var(--serif);color:#fff;font-size:1.05rem;margin:0 0 16px;font-weight:500}
+.chan h4{font-family:var(--serif);color:#fff;font-size:1.12rem;margin:0 0 16px;font-weight:500}
 .chan .logo{color:#fff;font-size:1.9rem;display:block;margin-bottom:14px}
 .chan ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .chan a:hover{color:#fff}
-.chan-cuoi{margin-top:50px;padding-top:22px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.78rem;color:#8A8176}
+.chan-cuoi{margin-top:50px;padding-top:22px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:.82rem;color:#ADA598}
 .xh{display:flex;gap:14px}
 .xh a{width:36px;height:36px;border:1px solid rgba(255,255,255,.2);border-radius:999px;display:grid;place-items:center;transition:.3s}
 .xh a:hover{background:#fff;color:var(--toi);border-color:#fff}

@@ -345,3 +345,8 @@ details[open] .noi li:nth-child(n+5){animation-delay:.3s}
 .luoi.sat .sp-ten{font-size:.98rem}
 .luoi.sat .sp-gia{font-size:.95rem}
 .nut{font-size:.82rem}
+
+/* 24/11 lucian "Cart drawer with free-shipping bar": vạch tiến độ tới mức miễn phí giao */
+.ship-vach{height:6px;border-radius:99px;background:rgba(0,0,0,.08);overflow:hidden;margin:10px 0 2px}
+.ship-vach i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#c9a45c,#8a9a5b);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.ship-vach.du i{background:#5f8f5a}

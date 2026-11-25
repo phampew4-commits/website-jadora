@@ -44,7 +44,8 @@ function veGio(){
     '<aside class="tom-tat"><h3>Tóm tắt đơn</h3>'+
       '<div class="dong"><span>Tiền hàng</span><span>'+gia(hang)+'</span></div>'+
       '<div class="dong"><span>Giao hàng</span><span>'+(ship?gia(ship):'Miễn phí')+'</span></div>'+
-      (con>0?'<p style="font-size:.85rem;color:var(--nhat);margin:6px 0 0">Mua thêm '+gia(con)+' để được miễn phí giao hàng.</p>':'')+
+      '<div class="ship-vach'+(con>0?'':' du')+'"><i style="width:'+(con>0?Math.min(100,hang/(hang+con)*100):100)+'%"></i></div>'+
+      '<p style="font-size:.85rem;color:var(--nhat);margin:6px 0 0">'+(con>0?'Mua thêm '+gia(con)+' để được miễn phí giao hàng.':'Đơn này được miễn phí giao hàng ✓')+'</p>'+
       '<div class="dong tong"><span>Tổng</span><span>'+gia(hang+ship)+'</span></div>'+
       '<a class="nut dac rong" href="dat-hang.html" style="margin-top:22px">Đặt hàng</a>'+
     '</aside></div>';
@@ -60,5 +61,6 @@ khoiDong(function(){
   });
 });
 </script>
+<script src="js/lucian-web.js?v=241126"></script>
 </body>
 </html>

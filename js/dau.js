@@ -99,6 +99,9 @@ function veNganGio() {
   $('.ng-chan').hidden = false;
   $('.ng-tong span').textContent = gia(hang);
   $('.ng-ghi').textContent = con > 0 ? 'Mua thêm ' + gia(con) + ' để được miễn phí giao hàng.' : 'Đơn này được miễn phí giao hàng.';
+  (function () { var g = $('.ng-ghi'), v = g.previousElementSibling && g.previousElementSibling.classList.contains('ship-vach') ? g.previousElementSibling : null;   // 24/11 lucian: vạch tiến độ freeship
+    if (!v) { v = document.createElement('div'); v.className = 'ship-vach'; v.innerHTML = '<i></i>'; g.before(v); }
+    v.firstChild.style.width = (con > 0 ? Math.min(100, hang / (hang + con) * 100) : 100) + '%'; v.classList.toggle('du', !(con > 0)); })();
 }
 function moGio() { var n = $('.ng'); if (!n) return; veNganGio(); n.classList.add('mo'); document.documentElement.classList.add('khoa-cuon'); }
 function dongGio() { var n = $('.ng'); if (n) n.classList.remove('mo'); document.documentElement.classList.remove('khoa-cuon'); }
